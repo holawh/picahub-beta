@@ -27,7 +27,7 @@ Codex 번들 Node를 사용할 경우:
 
 루트의 `package.json`, `render.yaml`, `DEPLOY.md`를 추가했습니다. Render 기준으로 GitHub 저장소 연결 후 Blueprint/Web Service로 배포할 수 있습니다.
 
-관리자 저장값을 유지하려면 Persistent Disk가 필요하므로 `render.yaml`은 `starter` 플랜과 `/var/data/content.json` 저장 경로로 구성되어 있습니다. 무료 Web Service로도 페이지 공개는 가능하지만 재시작/재배포 후 관리자 저장값이 사라질 수 있습니다.
+현재 `render.yaml`은 테스트 공개용 무료 Web Service 기준으로 구성되어 있습니다. 무료 Web Service에서는 재시작/재배포 후 관리자 저장값이 사라질 수 있습니다.
 
 ## 관리자 계정
 
