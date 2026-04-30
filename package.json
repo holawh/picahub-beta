@@ -1,0 +1,14 @@
+{
+  "name": "picahub-beta",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PICA HUB beta site and admin back office",
+  "main": "site/server/server.js",
+  "scripts": {
+    "start": "node site/server/server.js",
+    "check": "node --check site/server/server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

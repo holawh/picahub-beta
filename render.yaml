@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: picahub-beta
+    runtime: node
+    plan: starter
+    buildCommand: ""
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ADMIN_USER
+        value: admin
+      - key: ADMIN_PASS
+        sync: false
+      - key: DATA_FILE
+        value: /var/data/content.json
+    disk:
+      name: picahub-data
+      mountPath: /var/data
+      sizeGB: 1

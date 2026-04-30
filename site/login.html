@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>로그인 — PICA HUB</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0c10; --bg2:#0f1219; --bg3:#151a24;
+  --surface:#1a2030; --surface2:#212840;
+  --border:rgba(255,255,255,0.08);
+  --accent:#ff8c00; --accent2:#ffb347;
+  --blue:#3b82f6; --green:#22c55e; --purple:#a78bfa;
+  --text:#e8eaf0; --text2:#9aa3b5; --text3:#5a6478;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden;}
+body::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top,rgba(255,140,0,0.08),transparent 60%);pointer-events:none;}
+body::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,140,0,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,140,0,.5) 1px,transparent 1px);background-size:60px 60px;opacity:.03;pointer-events:none;}
+
+.shell{display:grid;grid-template-columns:1fr 1fr;gap:32px;max-width:1080px;width:100%;position:relative;z-index:1;}
+@media (max-width:880px){.shell{grid-template-columns:1fr;}}
+
+.brand{display:flex;flex-direction:column;justify-content:center;}
+.logo{display:flex;align-items:center;gap:12px;margin-bottom:24px;cursor:pointer;text-decoration:none;}
+.logo-mark{width:44px;height:44px;background:linear-gradient(135deg,var(--accent),#ff4500);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:24px;color:#fff;box-shadow:0 0 20px rgba(255,140,0,.35);}
+.logo-text{font-size:22px;font-weight:900;color:var(--text);letter-spacing:-.5px;}
+.logo-text span{color:var(--accent);}
+.logo-badge{font-size:10px;font-weight:700;color:var(--accent);background:rgba(255,140,0,.12);border:1px solid rgba(255,140,0,.3);border-radius:5px;padding:3px 7px;letter-spacing:.5px;}
+.brand h1{font-size:32px;font-weight:900;line-height:1.2;letter-spacing:-1px;margin-bottom:14px;}
+.brand h1 em{color:var(--accent);font-style:normal;}
+.brand p{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:26px;font-weight:300;}
+
+.test-list{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;}
+.test-title{font-size:12px;font-weight:800;color:var(--text3);letter-spacing:1px;margin-bottom:14px;display:flex;align-items:center;gap:6px;}
+.test-title::before{content:'';width:5px;height:5px;background:var(--accent);border-radius:50%;}
+.acct{display:flex;align-items:center;gap:12px;padding:11px 12px;border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s;background:var(--surface);margin-bottom:8px;}
+.acct:last-child{margin-bottom:0;}
+.acct:hover{border-color:rgba(255,140,0,.35);transform:translateX(2px);background:var(--surface2);}
+.acct-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0;}
+.acct-icon.owner{background:linear-gradient(135deg,var(--accent),#ff4500);}
+.acct-icon.pro{background:linear-gradient(135deg,var(--blue),#1d4ed8);}
+.acct-icon.user{background:linear-gradient(135deg,var(--purple),#7c3aed);}
+.acct-info{flex:1;min-width:0;}
+.acct-name{font-size:13px;font-weight:700;}
+.acct-meta{font-size:11px;color:var(--text3);margin-top:2px;font-family:'JetBrains Mono',monospace;}
+.acct-tag{font-size:10px;font-weight:700;border-radius:5px;padding:3px 8px;flex-shrink:0;}
+.acct-tag.owner{background:rgba(255,140,0,.12);color:var(--accent);}
+.acct-tag.pro{background:rgba(59,130,246,.12);color:var(--blue);}
+.acct-tag.user{background:rgba(167,139,250,.12);color:var(--purple);}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:32px 28px;box-shadow:0 12px 40px rgba(0,0,0,.4);}
+.card h2{font-size:22px;font-weight:900;letter-spacing:-.5px;margin-bottom:6px;}
+.card .sub{font-size:13px;color:var(--text3);margin-bottom:22px;}
+.field{margin-bottom:14px;}
+.field label{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.4px;margin-bottom:6px;display:block;text-transform:uppercase;}
+.field input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:11px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border .15s;}
+.field input:focus{border-color:rgba(255,140,0,.45);background:var(--bg3);}
+.btn-login{width:100%;padding:13px;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;background:linear-gradient(135deg,var(--accent),#ff6b00);border:none;color:#000;transition:all .2s;margin-top:8px;}
+.btn-login:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,140,0,.4);}
+.err{font-size:12px;color:#ef4444;margin-top:10px;min-height:16px;}
+.divider{text-align:center;font-size:11px;color:var(--text3);margin:18px 0;position:relative;}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border);}
+.divider::before{left:0;}.divider::after{right:0;}
+.btn-kakao{width:100%;padding:11px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;background:#fee500;border:none;color:#3a1d1d;}
+.back-home{display:block;text-align:center;margin-top:18px;font-size:12px;color:var(--text3);text-decoration:none;}
+.back-home:hover{color:var(--text2);}
+.tip{font-size:11px;color:var(--text3);background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.18);border-radius:8px;padding:9px 12px;margin-top:14px;line-height:1.55;}
+.tip strong{color:var(--blue);}
+</style>
+</head>
+<body>
+<div class="shell">
+  <!-- LEFT: brand + test accounts -->
+  <div class="brand">
+    <a class="logo" href="index.html">
+      <div class="logo-mark">P</div>
+      <span class="logo-text">PICA<span>HUB</span></span>
+      <span class="logo-badge">BETA</span>
+    </a>
+    <h1>PC방닷컴 × 게임트릭스<br><em>통합 로그인</em></h1>
+    <p>회원 유형에 따라 대시보드가 다르게 보여집니다.<br>아래 테스트 계정 중 하나를 클릭하면 자동으로 입력됩니다.</p>
+    <div class="test-list">
+      <div class="test-title">테스트 계정 (클릭하여 자동 입력)</div>
+      <div class="acct" onclick="fill('owner','owner1234')">
+        <div class="acct-icon owner">김</div>
+        <div class="acct-info">
+          <div class="acct-name">김사장님 — 피카 가맹점주</div>
+          <div class="acct-meta">owner / owner1234</div>
+        </div>
+        <span class="acct-tag owner">🏪 점주</span>
+      </div>
+      <div class="acct" onclick="fill('pro','pro1234')">
+        <div class="acct-icon pro">이</div>
+        <div class="acct-info">
+          <div class="acct-name">이분석가 — 게임트릭스 PRO</div>
+          <div class="acct-meta">pro / pro1234</div>
+        </div>
+        <span class="acct-tag pro">📊 PRO</span>
+      </div>
+      <div class="acct" onclick="fill('user','user1234')">
+        <div class="acct-icon user">미</div>
+        <div class="acct-info">
+          <div class="acct-name">미디어웹 — 일반 유저</div>
+          <div class="acct-meta">user / user1234</div>
+        </div>
+        <span class="acct-tag user">🎮 게이머</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: login form -->
+  <div class="card">
+    <h2>로그인</h2>
+    <div class="sub">PICA HUB 통합 계정으로 로그인하세요</div>
+    <form id="loginForm" autocomplete="off" onsubmit="return doLogin(event)">
+      <div class="field">
+        <label>아이디</label>
+        <input type="text" id="userid" placeholder="owner / pro / user" required>
+      </div>
+      <div class="field">
+        <label>비밀번호</label>
+        <input type="password" id="userpw" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="btn-login">로그인</button>
+      <div class="err" id="err"></div>
+    </form>
+    <div class="divider">또는</div>
+    <button class="btn-kakao" onclick="alert('소셜 로그인은 데모 환경에서 비활성화되어 있습니다.\\n좌측 테스트 계정을 사용해주세요.')">카카오로 로그인</button>
+    <div class="tip">💡 <strong>역할별 대시보드 안내</strong><br>로그인하는 계정에 따라 대시보드 메뉴와 기능이 다릅니다. 점주는 매장·매출·먹거리트릭스, PRO는 전 순위·CSV·GT리포트, 일반 유저는 크래프트박스·라운지·이벤트를 볼 수 있습니다.</div>
+    <a class="back-home" href="index.html">← 메인으로 돌아가기</a>
+  </div>
+</div>
+
+<script src="assets/auth.js"></script>
+<script>
+function fill(id, pw){
+  document.getElementById('userid').value = id;
+  document.getElementById('userpw').value = pw;
+  document.getElementById('err').textContent = '';
+}
+function doLogin(e){
+  e.preventDefault();
+  const id = document.getElementById('userid').value.trim();
+  const pw = document.getElementById('userpw').value;
+  const r = PicaAuth.login(id, pw);
+  if(!r.ok){
+    document.getElementById('err').textContent = r.message;
+    return false;
+  }
+  window.location.href = 'dashboard.html';
+  return false;
+}
+// 이미 로그인된 상태라면 dashboard로
+if (PicaAuth.getSession()) window.location.replace('dashboard.html');
+</script>
+</body>
+</html>

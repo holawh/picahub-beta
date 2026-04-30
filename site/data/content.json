@@ -1,0 +1,178 @@
+{
+  "rankings": [
+    {
+      "rank": 1,
+      "name": "?? ?? ???",
+      "publisher": "??? ???",
+      "genre": "AOS",
+      "share": 30.61,
+      "change": "same",
+      "icon": "LO"
+    },
+    {
+      "rank": 2,
+      "name": "??????",
+      "publisher": "????",
+      "genre": "????",
+      "share": 8.18,
+      "change": "same",
+      "icon": "BG"
+    },
+    {
+      "rank": 3,
+      "name": "????",
+      "publisher": "??? ???",
+      "genre": "FPS",
+      "share": 6.08,
+      "change": "down",
+      "icon": "VL"
+    },
+    {
+      "rank": 4,
+      "name": "????",
+      "publisher": "??",
+      "genre": "FPS",
+      "share": 4.77,
+      "change": "up",
+      "icon": "SA"
+    },
+    {
+      "rank": 5,
+      "name": "FC???",
+      "publisher": "??",
+      "genre": "???",
+      "share": 4.52,
+      "change": "same",
+      "icon": "FC"
+    },
+    {
+      "rank": 6,
+      "name": "????2",
+      "publisher": "????",
+      "genre": "FPS",
+      "share": 4.69,
+      "change": "up",
+      "icon": "OW"
+    },
+    {
+      "rank": 7,
+      "name": "???2",
+      "publisher": "?????",
+      "genre": "MMORPG",
+      "share": 2.73,
+      "change": "down",
+      "icon": "A2"
+    },
+    {
+      "rank": 8,
+      "name": "???? ???",
+      "publisher": "EA",
+      "genre": "????",
+      "share": 2.19,
+      "change": "same",
+      "icon": "AP"
+    },
+    {
+      "rank": 9,
+      "name": "?????",
+      "publisher": "??????",
+      "genre": "MMORPG",
+      "share": 2.07,
+      "change": "up",
+      "icon": "LA"
+    },
+    {
+      "rank": 10,
+      "name": "??????",
+      "publisher": "??",
+      "genre": "MMORPG",
+      "share": 2.19,
+      "change": "down",
+      "icon": "MS"
+    }
+  ],
+  "notices": [
+    {
+      "category": "??AI",
+      "title": "??AI ???? [??? 2026040601]",
+      "date": "04.06",
+      "tone": "ai"
+    },
+    {
+      "category": "?????",
+      "title": "2026? 4? 1?? ??????? ??",
+      "date": "04.07",
+      "tone": "gt"
+    },
+    {
+      "category": "??????",
+      "title": "????? 3?? ?? 1? - 4? ??",
+      "date": "04.05",
+      "tone": "food"
+    },
+    {
+      "category": "???",
+      "title": "???/AI PC? ???? ?? ??",
+      "date": "03.30",
+      "tone": "sys"
+    },
+    {
+      "category": "????",
+      "title": "????? ?? ?? ??",
+      "date": "04.01",
+      "tone": "comm"
+    }
+  ],
+  "programs": [
+    {
+      "name": "????",
+      "version": "2.8.4",
+      "status": "??",
+      "updatedAt": "2026-04-26"
+    },
+    {
+      "name": "?????",
+      "version": "5.1.2",
+      "status": "???",
+      "updatedAt": "2026-04-23"
+    },
+    {
+      "name": "??? ???",
+      "version": "1.9.0",
+      "status": "?? ??",
+      "updatedAt": "2026-04-20"
+    }
+  ],
+  "community": [
+    {
+      "board": "?????",
+      "title": "?? ?? ?? ?? ?? ? ??",
+      "author": "???",
+      "date": "04.08"
+    },
+    {
+      "board": "??? ???",
+      "title": "?? ? ?????? ?? ??",
+      "author": "????",
+      "date": "04.07"
+    },
+    {
+      "board": "??",
+      "title": "???? ???? ????",
+      "author": "???",
+      "date": "04.05"
+    }
+  ],
+  "promotions": [
+    {
+      "title": "?? ??? ?? ?? ????",
+      "period": "2026-04-01 ~ 2026-05-31",
+      "status": "???"
+    },
+    {
+      "title": "????? PRO ??? ??",
+      "period": "2026-04-15 ~ 2026-05-15",
+      "status": "???"
+    }
+  ]
+}

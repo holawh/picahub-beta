@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PC방.COM — 통합 대시보드 v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&family=Bebas+Neue&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08090d;--bg2:#0d0f16;--bg3:#12151f;
+  --surface:#181c28;--surface2:#1e2436;
+  --border:rgba(255,255,255,0.07);
+  --accent:#ff7a00;--blue:#3b82f6;--green:#22c55e;
+  --red:#f43f5e;--yellow:#facc15;--purple:#a78bfa;
+  --text:#eaecf2;--text2:#8b95aa;--text3:#454e64;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:200;background:rgba(8,9,13,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px;gap:16px;}
+.logo{display:flex;align-items:center;gap:0;cursor:pointer;flex-shrink:0;}
+.logo-pc{font-family:'Noto Sans KR',sans-serif;font-size:21px;font-weight:900;color:#fff;letter-spacing:-1px;line-height:1;}
+.logo-pc .dot{color:var(--accent);}
+.logo-div{width:1px;height:20px;background:rgba(255,255,255,0.12);margin:0 11px;}
+.logo-sub{font-size:9.5px;font-weight:700;color:var(--text3);letter-spacing:1.2px;line-height:1.3;}
+.logo-sub span{color:var(--accent);display:block;}
+.gnb{display:flex;align-items:center;gap:1px;flex:1;justify-content:center;}
+.ga{font-size:13px;font-weight:500;color:var(--text2);padding:5px 12px;border-radius:6px;cursor:pointer;transition:all .15s;position:relative;}
+.ga:hover,.ga.on{color:var(--text);background:var(--surface);}
+.ga.on::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:16px;height:2px;background:var(--accent);border-radius:2px;}
+.nbadge{font-size:9px;font-weight:700;background:var(--accent);color:#000;border-radius:3px;padding:1px 4px;margin-left:3px;}
+.nbadge.y{background:var(--yellow);}
+.topbar-r{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.vsw{display:flex;align-items:center;gap:4px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:3px;}
+.vsb{font-size:11px;font-weight:700;padding:4px 10px;border-radius:5px;cursor:pointer;color:var(--text3);transition:all .15s;border:none;background:none;font-family:'Noto Sans KR',sans-serif;}
+.vsb.on{background:var(--accent);color:#000;}
+.vsb.pro.on{background:var(--blue);color:#fff;}
+.vsb.gamer.on{background:var(--purple);color:#fff;}
+.uchip{display:flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:4px 12px 4px 6px;cursor:pointer;}
+.uav{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#ff4500);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;}
+.uname{font-size:12px;font-weight:600;}
+.urole{font-size:10px;color:var(--accent);}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:210px 1fr;min-height:calc(100vh - 56px);}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:16px 10px;position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto;}
+.sbl{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:1px;padding:0 8px;margin:14px 0 5px;}
+.sbl:first-child{margin-top:0;}
+.sbi{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;cursor:pointer;transition:all .15s;font-size:13px;color:var(--text2);margin-bottom:1px;}
+.sbi:hover{background:var(--surface);color:var(--text);}
+.sbi.on{background:rgba(255,122,0,.1);color:var(--accent);font-weight:700;}
+.sbi-ico{font-size:15px;width:18px;text-align:center;flex-shrink:0;}
+.sbadge{margin-left:auto;font-size:9px;font-weight:700;background:var(--accent);color:#000;border-radius:8px;padding:1px 5px;}
+.sbadge.bl{background:var(--blue);color:#fff;}
+.sbadge.rd{background:var(--red);color:#fff;}
+.sbadge.yw{background:var(--yellow);color:#000;}
+
+.main{padding:20px 24px 60px;min-width:0;}
+
+/* WIDGETS */
+.w{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.w-hd{padding:12px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.w-title{font-size:13.5px;font-weight:800;}
+.w-meta{font-size:11px;color:var(--text3);}
+.w-link{font-size:12px;color:var(--accent);cursor:pointer;font-weight:600;text-decoration:none;}
+.w-link:hover{text-decoration:underline;}
+
+/* KPI */
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:15px 17px;transition:border-color .15s,transform .15s;cursor:default;position:relative;overflow:hidden;}
+.kpi:hover{border-color:rgba(255,122,0,.25);transform:translateY(-2px);}
+.kpi-ico{font-size:20px;margin-bottom:7px;}
+.kpi-lbl{font-size:10.5px;font-weight:600;color:var(--text3);margin-bottom:3px;}
+.kpi-val{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--text);line-height:1;letter-spacing:.5px;}
+.kpi-val.ac{color:var(--accent);}
+.kpi-val.gr{color:var(--green);}
+.kpi-val.bl{color:var(--blue);}
+.kpi-val.yw{color:var(--yellow);}
+.kpi-sub{font-size:10px;color:var(--text3);margin-top:4px;}
+.kpi-delta{font-size:10px;font-weight:700;margin-top:3px;display:inline-flex;align-items:center;gap:2px;}
+.kpi-delta.up{color:var(--green);}
+.kpi-delta.dn{color:var(--red);}
+.kpi-gl{position:absolute;bottom:-12px;right:-12px;width:55px;height:55px;border-radius:50%;opacity:.07;}
+
+/* GRIDS */
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:14px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:14px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:14px;}
+.g7030{display:grid;grid-template-columns:1fr 300px;gap:11px;margin-bottom:14px;}
+.g6040{display:grid;grid-template-columns:1.5fr 1fr;gap:11px;margin-bottom:14px;}
+.mb{margin-bottom:14px;}
+
+/* WELCOME */
+.welcome{background:linear-gradient(135deg,#120a00 0%,#14102a 100%);border:1px solid rgba(255,122,0,.2);border-radius:14px;padding:16px 22px;margin-bottom:13px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden;}
+.welcome::before{content:'';position:absolute;top:-50px;right:60px;width:180px;height:180px;background:radial-gradient(circle,rgba(255,122,0,.08),transparent 70%);pointer-events:none;}
+.wt h2{font-size:17px;font-weight:900;letter-spacing:-.5px;margin-bottom:3px;}
+.wt h2 em{color:var(--accent);font-style:normal;}
+.wt p{font-size:12px;color:var(--text2);}
+.wq{display:flex;gap:7px;}
+.wqb{font-size:12px;font-weight:700;border-radius:7px;padding:6px 13px;cursor:pointer;transition:all .15s;font-family:'Noto Sans KR',sans-serif;}
+.wqb.pri{background:var(--accent);color:#000;border:none;}
+.wqb.sec{background:transparent;color:var(--text2);border:1px solid var(--border);}
+.wqb:hover{opacity:.85;transform:translateY(-1px);}
+
+/* 편집 바 */
+.edit-bar{display:flex;align-items:center;justify-content:space-between;background:rgba(255,122,0,.05);border:1px solid rgba(255,122,0,.13);border-radius:9px;padding:7px 13px;margin-bottom:12px;font-size:11.5px;color:var(--text2);}
+.edit-bar strong{color:var(--accent);}
+.edit-toggle{font-size:11px;font-weight:700;color:var(--accent);background:rgba(255,122,0,.1);border:1px solid rgba(255,122,0,.22);border-radius:5px;padding:3px 9px;cursor:pointer;transition:all .15s;}
+.edit-toggle:hover{background:rgba(255,122,0,.18);}
+.edit-toggle.active{background:var(--accent);color:#000;}
+.drag-section{position:relative;}
+.drag-handle{display:none;position:absolute;top:7px;right:7px;z-index:10;background:rgba(255,122,0,.13);border:1px solid rgba(255,122,0,.28);border-radius:5px;padding:2px 7px;font-size:10px;color:var(--accent);cursor:grab;font-weight:700;}
+.drag-handle:active{cursor:grabbing;}
+.edit-mode .drag-handle{display:flex;align-items:center;gap:2px;}
+.edit-mode .drag-section .w,.edit-mode .drag-section .kpi{outline:1px dashed rgba(255,122,0,.2);outline-offset:2px;}
+
+/* 빠른 실행 */
+.qrow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.qchip{display:flex;align-items:center;gap:5px;background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:5px 11px;cursor:pointer;font-size:11.5px;font-weight:600;color:var(--text2);transition:all .15s;}
+.qchip:hover{border-color:rgba(255,122,0,.3);color:var(--text);background:var(--surface2);}
+
+/* LIVE */
+.live{display:inline-block;width:5px;height:5px;background:var(--red);border-radius:50%;margin-right:4px;animation:blink 1.5s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* 시간대별 가동율 컴팩트 */
+.hourly-compact{padding:10px 14px 8px;}
+.hbars{display:flex;align-items:flex-end;gap:3px;height:48px;}
+.hbw{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.hb{width:100%;border-radius:3px 3px 0 0;background:linear-gradient(180deg,var(--accent),rgba(255,122,0,.3));transition:height .5s;position:relative;cursor:pointer;}
+.hb:hover::after{content:attr(data-v);position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:700;color:var(--accent);white-space:nowrap;background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:1px 4px;}
+.hb.now{background:linear-gradient(180deg,#fff,rgba(255,255,255,.35));}
+.hlbl{font-size:7.5px;color:var(--text3);}
+.h-meta{display:flex;justify-content:space-between;margin-top:5px;font-size:10px;color:var(--text3);}
+
+/* 게임 순위 */
+.rrow{display:flex;align-items:center;gap:8px;padding:7px 13px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;}
+.rrow:last-child{border-bottom:none;}
+.rrow:hover{background:rgba(255,255,255,.02);}
+.rn{font-family:'Bebas Neue';font-size:16px;width:17px;text-align:center;color:var(--text3);flex-shrink:0;}
+.rn.r1{color:var(--yellow);}
+.rn.r2{color:#c0c0c0;}
+.rn.r3{color:#cd7f32;}
+.rico{width:28px;height:28px;border-radius:6px;background:var(--bg3);font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.rinfo{flex:1;min-width:0;}
+.rname{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rpub{font-size:9.5px;color:var(--text3);}
+.rpct{font-family:'JetBrains Mono';font-size:11.5px;font-weight:700;flex-shrink:0;}
+.rdelta{font-size:9px;font-weight:700;padding:1px 4px;border-radius:3px;flex-shrink:0;}
+.rd-up{color:var(--red);background:rgba(244,63,94,.1);}
+.rd-dn{color:var(--blue);background:rgba(59,130,246,.1);}
+.rd-eq{color:var(--text3);background:var(--bg3);}
+.rbar-w{padding:0 13px 1px;}
+.rbar{height:2px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+.rbar-f{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),#ff4500);}
+.rank-lock{padding:9px 13px;text-align:center;font-size:11px;color:var(--text3);border-top:1px solid var(--border);}
+.rank-lock a{color:var(--accent);cursor:pointer;font-weight:600;}
+
+/* 지역별 */
+.rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;}
+.rg-item{padding:9px 11px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);cursor:pointer;transition:background .1s;}
+.rg-item:hover{background:rgba(255,255,255,.02);}
+.rg-item:nth-child(3n){border-right:none;}
+.rg-name{font-size:10.5px;font-weight:700;margin-bottom:2px;}
+.rg-cnt{font-family:'Bebas Neue';font-size:19px;color:var(--accent);line-height:1;}
+.rg-bar{height:2px;background:var(--bg3);border-radius:2px;margin-top:3px;}
+.rg-bf{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),rgba(255,122,0,.3));}
+.rg-d{font-size:9px;color:var(--text3);margin-top:2px;}
+
+/* PC 사양 */
+.spec-i{display:flex;align-items:center;gap:8px;padding:8px 13px;border-bottom:1px solid var(--border);}
+.spec-i:last-child{border-bottom:none;}
+.spec-lbl{font-size:10.5px;font-weight:700;color:var(--text2);width:45px;flex-shrink:0;}
+.spec-bw{flex:1;}
+.spec-name{font-size:11px;font-weight:700;margin-bottom:3px;}
+.spec-bar{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+.spec-bf{height:100%;border-radius:2px;}
+.spec-pct{font-family:'JetBrains Mono';font-size:10px;color:var(--text2);width:28px;text-align:right;flex-shrink:0;}
+
+/* 먹거리트릭스 */
+.food-hd{background:linear-gradient(135deg,rgba(250,204,21,.06),rgba(250,204,21,.02));border-bottom:1px solid var(--border);padding:11px 14px;display:flex;align-items:center;justify-content:space-between;}
+.food-title{font-size:13px;font-weight:800;}
+.food-badge{font-size:9px;font-weight:700;background:rgba(250,204,21,.1);color:var(--yellow);border:1px solid rgba(250,204,21,.22);border-radius:4px;padding:2px 6px;}
+.food-g{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.food-i{padding:8px 11px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);cursor:pointer;transition:background .1s;}
+.food-i:nth-child(2n){border-right:none;}
+.food-i:hover{background:rgba(255,255,255,.02);}
+.food-rn{font-family:'Bebas Neue';font-size:11px;color:var(--text3);margin-bottom:1px;}
+.food-nm{font-size:11.5px;font-weight:700;margin-bottom:2px;}
+.food-bar{height:2px;background:var(--bg3);border-radius:2px;margin-top:3px;}
+.food-bf{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--yellow),rgba(250,204,21,.3));}
+.food-pct{font-size:9px;color:var(--text3);margin-top:2px;}
+.food-foot{padding:8px 13px;background:rgba(250,204,21,.03);font-size:11px;color:var(--text3);border-top:1px solid var(--border);text-align:center;}
+
+/* 공지 */
+.ni{display:flex;align-items:flex-start;gap:7px;padding:8px 13px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;}
+.ni:last-child{border-bottom:none;}
+.ni:hover{background:rgba(255,255,255,.02);}
+.ntag{font-size:9px;font-weight:700;border-radius:3px;padding:2px 5px;white-space:nowrap;flex-shrink:0;margin-top:1px;}
+.t-ai{background:rgba(255,122,0,.14);color:var(--accent);}
+.t-gt{background:rgba(59,130,246,.14);color:var(--blue);}
+.t-sys{background:rgba(255,255,255,.05);color:var(--text3);}
+.t-food{background:rgba(250,204,21,.09);color:var(--yellow);}
+.t-comm{background:rgba(34,197,94,.09);color:var(--green);}
+.n-text{font-size:12px;color:var(--text2);flex:1;line-height:1.45;}
+.n-text strong{color:var(--text);font-weight:600;}
+.n-date{font-size:10px;color:var(--text3);white-space:nowrap;flex-shrink:0;}
+
+/* 다운로드 */
+.dlg{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:11px;}
+.dlb{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:7px;}
+.dlb:hover{border-color:rgba(255,122,0,.3);background:var(--surface2);}
+.dl-ico{font-size:19px;flex-shrink:0;}
+.dl-nm{font-size:11px;font-weight:700;}
+.dl-ver{font-size:9px;color:var(--text3);}
+.dl-new{font-size:8px;font-weight:700;background:var(--accent);color:#000;border-radius:2px;padding:1px 3px;margin-left:3px;}
+
+/* A/S */
+.as-g{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:11px;}
+.as-c{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:11px;cursor:pointer;transition:all .15s;text-align:center;}
+.as-c:hover{border-color:rgba(255,122,0,.3);background:var(--surface2);}
+.as-ico{font-size:22px;margin-bottom:4px;}
+.as-lbl{font-size:11px;font-weight:700;color:var(--text2);}
+.as-desc{font-size:9px;color:var(--text3);margin-top:2px;}
+
+/* 커뮤니티 */
+.ci{padding:8px 13px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;}
+.ci:last-child{border-bottom:none;}
+.ci:hover{background:rgba(255,255,255,.02);}
+.ci-t{font-size:12px;font-weight:500;margin-bottom:3px;}
+.ci-m{display:flex;gap:7px;font-size:10px;color:var(--text3);}
+.ci-hot{font-size:9px;font-weight:700;color:var(--red);background:rgba(244,63,94,.1);border-radius:3px;padding:1px 4px;margin-left:3px;}
+
+/* 요금 */
+.price-range-row{display:flex;align-items:center;gap:9px;padding:9px 14px;border-bottom:1px solid var(--border);}
+.price-range-row:last-child{border-bottom:none;}
+.prl{font-size:11px;color:var(--text2);width:55px;flex-shrink:0;}
+.pr-track{flex:1;height:5px;background:var(--bg3);border-radius:3px;position:relative;}
+.pr-fill{position:absolute;top:0;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--green),var(--accent));}
+.pr-avg{position:absolute;top:-3px;width:2px;height:11px;background:#fff;border-radius:1px;transform:translateX(-50%);}
+.pr-vals{display:flex;justify-content:space-between;margin-top:2px;font-family:'JetBrains Mono';font-size:9px;color:var(--text3);}
+
+/* 종합지수 */
+.idx-wrap{display:flex;align-items:center;gap:12px;padding:12px 14px;}
+.idx-num{font-family:'Bebas Neue';font-size:48px;line-height:1;}
+.idx-chg{font-family:'JetBrains Mono';font-size:12px;}
+.idx-chg.dn{color:var(--blue);}
+.idx-chg.up{color:var(--red);}
+.chartw{padding:0 14px 12px;}
+.chartsv{width:100%;height:42px;}
+
+/* TABS */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 12px;}
+.tab{font-size:11px;font-weight:600;color:var(--text3);padding:8px 10px;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;margin-bottom:-1px;}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent);}
+.tab:hover{color:var(--text);}
+
+/* PAGE VIEW */
+.pv{display:none;}
+.pv.on{display:block;animation:fu .2s ease;}
+@keyframes fu{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ═══ GT PRO ═══ */
+.pro-filter{padding:12px 14px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;border-bottom:1px solid var(--border);}
+.pf-group{display:flex;flex-direction:column;gap:4px;}
+.pf-lbl{font-size:10px;color:var(--text3);font-weight:700;letter-spacing:.5px;}
+.pf-btns{display:flex;gap:4px;flex-wrap:wrap;}
+.pfb{font-size:11px;font-weight:700;background:var(--surface2);color:var(--text2);border:1px solid var(--border);border-radius:5px;padding:4px 10px;cursor:pointer;transition:all .15s;font-family:'Noto Sans KR',sans-serif;}
+.pfb.on{background:var(--blue);color:#fff;border-color:transparent;}
+.pfb:hover:not(.on){background:var(--bg3);}
+.csv-btn{margin-left:auto;background:var(--blue);color:#fff;border:none;border-radius:7px;padding:6px 14px;font-weight:700;font-size:11.5px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;align-self:flex-end;}
+.pro-rank-hd{display:grid;grid-template-columns:42px 1fr 85px 65px 70px 55px;padding:7px 13px;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.3px;}
+.pro-rank-row{display:grid;grid-template-columns:42px 1fr 85px 65px 70px 55px;padding:7px 13px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background .1s;font-size:12px;}
+.pro-rank-row:last-child{border-bottom:none;}
+.pro-rank-row:hover{background:rgba(255,255,255,.02);}
+.genre-rank-wrap{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.genre-col{border-right:1px solid var(--border);}
+.genre-col:last-child{border-right:none;}
+.genre-hd{padding:9px 12px;border-bottom:1px solid var(--border);font-size:11.5px;font-weight:800;display:flex;align-items:center;justify-content:space-between;}
+.genre-tag{font-size:9px;font-weight:700;border-radius:3px;padding:2px 5px;}
+.gt-fps{background:rgba(244,63,94,.1);color:var(--red);}
+.gt-aos{background:rgba(250,204,21,.1);color:var(--yellow);}
+.gt-rpg{background:rgba(59,130,246,.1);color:var(--blue);}
+.gt-btr{background:rgba(167,139,250,.1);color:var(--purple);}
+.pc-trix-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.pt-item{padding:11px 13px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);}
+.pt-item:nth-child(2n){border-right:none;}
+.pt-item:nth-last-child(-n+2){border-bottom:none;}
+.pt-cat{font-size:10px;font-weight:700;color:var(--text3);margin-bottom:4px;letter-spacing:.5px;}
+.pt-top{font-size:12.5px;font-weight:700;margin-bottom:2px;}
+.pt-pct{font-family:'JetBrains Mono';font-size:13px;font-weight:700;color:var(--accent);}
+.pt-runner{font-size:10px;color:var(--text3);margin-top:2px;}
+
+/* ═══ 게이머 / 크래프트박스 ═══ */
+.cb-topstrip{background:linear-gradient(90deg,#13102a,#0e1428);border:1px solid rgba(167,139,250,.18);border-radius:11px;padding:9px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.cb-announce{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--text2);}
+.cb-stats{display:flex;gap:10px;align-items:center;}
+.cb-m{background:rgba(250,204,21,.1);color:var(--yellow);border-radius:5px;padding:2px 8px;display:flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;}
+.cb-c{background:rgba(34,197,94,.09);color:var(--green);border-radius:5px;padding:2px 8px;display:flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;}
+.att-banner{background:linear-gradient(135deg,rgba(167,139,250,.08),rgba(124,58,237,.04));border:1px solid rgba(167,139,250,.18);border-radius:9px;padding:9px 14px;margin-bottom:11px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all .15s;}
+.att-banner:hover{border-color:rgba(167,139,250,.35);}
+.att-text{font-size:12.5px;color:var(--text2);}
+.att-text strong{color:var(--purple);}
+.att-btn{font-size:11px;font-weight:700;color:var(--purple);background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.22);border-radius:5px;padding:4px 11px;cursor:pointer;}
+
+.myinfo-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:11px;}
+.my-profile{display:flex;align-items:center;gap:11px;margin-bottom:12px;padding-bottom:11px;border-bottom:1px solid var(--border);}
+.my-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--purple),#5b21b6);display:flex;align-items:center;justify-content:center;font-size:19px;}
+.my-name{font-size:13.5px;font-weight:800;}
+.my-level{font-size:10.5px;color:var(--text3);}
+.my-badges{display:flex;gap:6px;}
+.my-badge{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:7px 10px;flex:1;text-align:center;}
+.mb-val{font-family:'Bebas Neue';font-size:20px;color:var(--yellow);}
+.mb-val.gr{color:var(--green);}
+.mb-lbl{font-size:9.5px;color:var(--text3);}
+
+.benefit-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:11px;}
+.bb-hd{padding:11px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.bb-title{font-size:13px;font-weight:800;}
+.bb-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 12px;}
+.bb-tab{font-size:11px;font-weight:600;color:var(--text3);padding:7px 9px;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;margin-bottom:-1px;}
+.bb-tab.on{color:var(--purple);border-bottom-color:var(--purple);}
+.bb-item{display:flex;align-items:center;gap:9px;padding:8px 13px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;}
+.bb-item:last-child{border-bottom:none;}
+.bb-item:hover{background:rgba(255,255,255,.02);}
+.bb-ico{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.bb-info{flex:1;}
+.bb-nm{font-size:12.5px;font-weight:600;}
+.bb-desc{font-size:10.5px;color:var(--text3);margin-top:1px;}
+.bb-reward{display:flex;align-items:center;gap:3px;font-size:11px;font-weight:700;color:var(--yellow);background:rgba(250,204,21,.07);border-radius:4px;padding:3px 7px;flex-shrink:0;}
+
+.ranking-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:11px;}
+.rc-hd{background:linear-gradient(135deg,#1a0a2e,#0e1428);border-bottom:1px solid var(--border);padding:12px 14px;}
+.rc-title{font-size:13.5px;font-weight:800;margin-bottom:2px;}
+.rc-period{font-size:10.5px;color:var(--text3);}
+.rc-sponsor{font-size:10px;color:var(--yellow);font-weight:700;margin-top:2px;}
+.rc-my{padding:8px 13px;border-bottom:1px solid var(--border);font-size:11.5px;color:var(--text2);display:flex;align-items:center;gap:7px;}
+.rc-body{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.rc-col{padding:10px 12px;border-right:1px solid var(--border);}
+.rc-col:last-child{border-right:none;}
+.rc-col-title{font-size:10.5px;font-weight:700;color:var(--text3);margin-bottom:7px;}
+.rc-row{display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.rc-row:last-child{border-bottom:none;}
+.rc-rn{font-family:'Bebas Neue';font-size:18px;width:16px;text-align:center;flex-shrink:0;}
+.rc-rn.r1{color:var(--yellow);}
+.rc-rn.r2{color:#c0c0c0;}
+.rc-rn.r3{color:#cd7f32;}
+.rc-name{font-size:12px;font-weight:600;flex:1;}
+
+.quest-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:11px;}
+.qc-hd{padding:11px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.qc-title{font-size:13px;font-weight:800;}
+.qc-sub{font-size:10.5px;color:var(--text3);}
+.quest-row{display:flex;align-items:center;gap:9px;padding:8px 13px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;}
+.quest-row:last-child{border-bottom:none;}
+.quest-row:hover{background:rgba(255,255,255,.02);}
+.q-ico{width:30px;height:30px;border-radius:6px;background:var(--bg3);font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.q-desc{flex:1;font-size:12px;color:var(--text2);line-height:1.4;}
+.q-desc strong{color:var(--text);}
+.q-prog{width:75px;flex-shrink:0;}
+.q-bar{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;margin-bottom:3px;}
+.q-bar-f{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--purple),#7c3aed);}
+.q-pct{font-size:9px;color:var(--text3);text-align:right;}
+.q-reward{display:flex;align-items:center;gap:2px;font-size:10.5px;font-weight:700;color:var(--yellow);flex-shrink:0;}
+
+.lounge-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;}
+.lg-item{padding:11px 9px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);cursor:pointer;transition:background .1s;text-align:center;}
+.lg-item:nth-child(4n){border-right:none;}
+.lg-item:hover{background:rgba(255,255,255,.03);}
+.lg-ico{font-size:24px;margin-bottom:4px;}
+.lg-nm{font-size:11px;font-weight:700;}
+.lg-cnt{font-size:9px;color:var(--text3);margin-top:1px;}
+.lg-hot{font-size:9px;font-weight:700;color:var(--red);background:rgba(244,63,94,.07);border-radius:3px;padding:1px 4px;margin-top:2px;display:inline-block;}
+
+.g-2col{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:11px;}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <a class="logo" href="index.html">
+    <div class="logo-pc">PC방<span class="dot">.COM</span></div>
+    <div class="logo-div"></div>
+    <div class="logo-sub">피카 통합 플랫폼<span>by MediaWeb</span></div>
+  </a>
+  <nav class="gnb">
+    <span class="ga on">대시보드</span>
+    <a class="ga" href="index.html#ranking" style="text-decoration:none;color:inherit;" onclick="goRanking(event)">게임순위<span class="nbadge">LIVE</span></a>
+    <a class="ga" href="index.html#tools" style="text-decoration:none;color:inherit;" onclick="goTools(event)">피카 솔루션</a>
+    <span class="ga">먹거리트릭스<span class="nbadge y">β</span></span>
+    <a class="ga" href="index.html#community" style="text-decoration:none;color:inherit;" onclick="goCommunity(event)">커뮤니티</a>
+    <a class="ga" href="https://www.pcbang.com/_picaNews/notice_list.jsp" target="_blank" style="text-decoration:none;color:inherit;">공지사항</a>
+  </nav>
+  <div class="topbar-r">
+    <div class="uchip">
+      <div class="uav" id="uav">김</div>
+      <div>
+        <div class="uname" id="uname">김사장님</div>
+        <div class="urole" id="urole">피카 가맹점주</div>
+      </div>
+    </div>
+    <button class="vsb" id="logoutBtn" onclick="doLogout()" style="background:var(--surface);color:var(--text2);border:1px solid var(--border);padding:5px 12px;border-radius:7px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-size:11.5px;font-weight:700;">로그아웃</button>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════
+  VIEW 1 : 점주 대시보드
+════════════════════════════════ -->
+<div class="pv on" id="view-owner">
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sbl">대시보드</div>
+    <div class="sbi on"><span class="sbi-ico">🏠</span>홈 대시보드</div>
+    <div class="sbi"><span class="sbi-ico">📺</span>웹매장조회</div>
+    <div class="sbi"><span class="sbi-ico">📊</span>매출리포트</div>
+    <div class="sbl">공지 &amp; 지원</div>
+    <div class="sbi"><span class="sbi-ico">📢</span>통합 공지<span class="sbadge rd">2</span></div>
+    <div class="sbi"><span class="sbi-ico">🖥</span>원격 A/S<span class="sbadge rd">요청</span></div>
+    <div class="sbi"><span class="sbi-ico">📞</span>1:1 문의</div>
+    <div class="sbi"><span class="sbi-ico">⬇️</span>다운로드</div>
+    <div class="sbl">게임트릭스</div>
+    <div class="sbi"><span class="sbi-ico">🏆</span>게임순위 TOP20<span class="sbadge">무료</span></div>
+    <div class="sbi"><span class="sbi-ico">📈</span>종합게임지수</div>
+    <div class="sbi"><span class="sbi-ico">📋</span>주간 GT리포트</div>
+    <div class="sbl">전국 PC방 현황</div>
+    <div class="sbi"><span class="sbi-ico">🗺</span>지역별 현황</div>
+    <div class="sbi"><span class="sbi-ico">⏰</span>시간대별 가동율</div>
+    <div class="sbi"><span class="sbi-ico">💰</span>전국 요금 현황</div>
+    <div class="sbi"><span class="sbi-ico">🖥</span>PC 평균 사양</div>
+    <div class="sbl">먹거리트릭스 β</div>
+    <div class="sbi"><span class="sbi-ico">🍜</span>메뉴 순위<span class="sbadge yw">NEW</span></div>
+    <div class="sbi"><span class="sbi-ico">🛒</span>유통 마켓</div>
+    <div class="sbl">커뮤니티</div>
+    <div class="sbi"><span class="sbi-ico">🏪</span>사장님쉼터<span class="sbadge bl">3</span></div>
+    <div class="sbi"><span class="sbi-ico">🛠</span>운영 TIP</div>
+    <div class="sbi"><span class="sbi-ico">👤</span>구인구직</div>
+    <div class="sbi"><span class="sbi-ico">🛒</span>중고장터</div>
+  </aside>
+  <main class="main">
+
+    <div class="welcome">
+      <div class="wt">
+        <h2><em>김사장님</em>의 PC방 — 2026년 4월 7일</h2>
+        <p>가동 중 <strong style="color:var(--accent)">47석</strong> · 일 매출 <strong style="color:var(--green)">₩382,400</strong> · 피카AI 정상 작동</p>
+      </div>
+      <div class="wq">
+        <button class="wqb pri" onclick="window.open('https://www.pcbang.com/_onlineCounter/onlineCounter_pc.jsp','_blank')">📺 웹매장 바로보기</button>
+        <button class="wqb sec" onclick="window.open('https://www.pcbang.com/_support/remoteASWin.jsp','_blank')">🖥 원격 A/S</button>
+      </div>
+    </div>
+
+    <div class="qrow">
+      <div class="qchip" onclick="window.open('https://www.pcbang.com/_picadown/main.jsp','_blank')"><span>⬇️</span>피카AI 다운로드</div>
+      <div class="qchip" onclick="window.open('https://www.pcbang.com/_picacash/cashCharge.jsp','_blank')"><span>💳</span>간편결제 충전</div>
+      <div class="qchip" onclick="window.open('https://www.pcbang.com/_picacash/cash_real_cancel.jsp','_blank')"><span>↩️</span>간편결제 취소</div>
+      <div class="qchip" onclick="window.open('https://www.pcbang.com/_support/kakaopayCode_pop.jsp','_blank')"><span>🟡</span>카카오페이 가맹</div>
+      <div class="qchip"><span>📷</span>무인관제 설정</div>
+      <div class="qchip" onclick="window.open('https://www.pcbang.com/_picaNews/notice_list.jsp','_blank')"><span>📢</span>공지 확인 <span style="font-size:9px;background:var(--red);color:#fff;border-radius:8px;padding:1px 5px;margin-left:3px;">2</span></div>
+    </div>
+
+    <!-- 섹션 편집 -->
+    <div class="edit-bar">
+      <span>💡 <strong>섹션 편집 모드</strong> — 활성화 시 섹션별 이동 핸들이 표시됩니다</span>
+      <button class="edit-toggle" id="editToggle" onclick="toggleEdit()">✏️ 편집 모드</button>
+    </div>
+
+    <!-- KPI -->
+    <div class="g4 drag-section" id="ds-kpi">
+      <div class="drag-handle">⠿ 이동</div>
+      <div class="kpi"><div class="kpi-ico">🗺</div><div class="kpi-lbl">전국 피카 가맹점</div><div class="kpi-val ac">9,847</div><div class="kpi-sub">전국 PC방 약 13,200개소</div><div class="kpi-delta up">▲ +23 이번달</div><div class="kpi-gl" style="background:var(--accent)"></div></div>
+      <div class="kpi"><div class="kpi-ico">⚡</div><div class="kpi-lbl">전국 평균 가동율</div><div class="kpi-val gr">62<span style="font-size:16px">%</span></div><div class="kpi-sub">오후 8시 피크타임 기준</div><div class="kpi-delta dn">▼ -3% 전주 대비</div><div class="kpi-gl" style="background:var(--green)"></div></div>
+      <div class="kpi"><div class="kpi-ico">💰</div><div class="kpi-lbl">전국 평균 시간 요금</div><div class="kpi-val bl">₩1,380</div><div class="kpi-sub">일반석 기준 / 지역별 상이</div><div class="kpi-delta up">▲ 서울 평균 ₩1,520</div><div class="kpi-gl" style="background:var(--blue)"></div></div>
+      <div class="kpi"><div class="kpi-ico">🏆</div><div class="kpi-lbl">PC방 1위 게임</div><div class="kpi-val yw" style="font-size:17px;letter-spacing:-.5px;margin-top:3px;">리그 오브<br>레전드</div><div class="kpi-sub">점유율 30.61%</div><div class="kpi-delta" style="color:var(--yellow)">◆ 401주 연속 1위</div><div class="kpi-gl" style="background:var(--yellow)"></div></div>
+    </div>
+
+    <!-- 통합공지 + 지원서비스 + 사장님쉼터 (우선 배치) -->
+    <div class="g2 mb drag-section" id="ds-notice">
+      <div class="drag-handle">⠿ 이동</div>
+      <div class="w">
+        <div class="w-hd"><span class="w-title">📢 통합 공지사항</span><a class="w-link" href="https://www.pcbang.com/_picaNews/notice_list.jsp" target="_blank">전체보기</a></div>
+        <div id="noticeList"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="w">
+          <div class="w-hd"><span class="w-title">🛠 지원 서비스</span><span class="w-meta">1544-2552</span></div>
+          <div class="as-g">
+            <div class="as-c" onclick="window.open('https://www.pcbang.com/_support/remoteASWin.jsp','_blank')"><div class="as-ico">🖥</div><div class="as-lbl">원격 A/S</div><div class="as-desc">즉시 연결</div></div>
+            <div class="as-c"><div class="as-ico">📞</div><div class="as-lbl">1:1 문의</div><div class="as-desc">평균 응답 2h</div></div>
+            <div class="as-c" onclick="window.open('https://www.pcbang.com/_support/main.jsp','_blank')"><div class="as-ico">❓</div><div class="as-lbl">FAQ</div><div class="as-desc">자주묻는질문</div></div>
+            <div class="as-c"><div class="as-ico">📅</div><div class="as-lbl">방문 예약</div><div class="as-desc">설치·점검</div></div>
+          </div>
+        </div>
+        <div class="w">
+          <div class="w-hd"><span class="w-title">🏪 사장님쉼터</span><span class="w-link">더보기 →</span></div>
+          <div class="ci"><div class="ci-t">LoL 트래픽 갑자기 줄었나요?<span class="ci-hot">🔥</span></div><div class="ci-m"><span>💬 47</span><span>👁 892</span><span>04.07</span></div></div>
+          <div class="ci"><div class="ci-t">PICABOX+ 선불기기 연동 후기</div><div class="ci-m"><span>💬 23</span><span>👁 445</span><span>04.06</span></div></div>
+          <div class="ci"><div class="ci-t">호요버스 PC방 혜택 4월 정리</div><div class="ci-m"><span>💬 9</span><span>👁 502</span><span>04.02</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 가동율(컴팩트) + 먹거리트릭스  |  게임순위 -->
+    <div style="display:grid;grid-template-columns:1fr 295px;gap:11px;" class="mb drag-section" id="ds-rank">
+      <div class="drag-handle">⠿ 이동</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="w">
+          <div class="w-hd"><span class="w-title"><span class="live"></span>시간대별 가동율</span><span class="w-meta">전국 평균 · 오늘</span></div>
+          <div class="hourly-compact">
+            <div class="hbars" id="hbars"></div>
+            <div class="h-meta">
+              <span style="display:flex;align-items:center;gap:3px;"><span style="width:7px;height:7px;background:var(--accent);border-radius:2px;display:inline-block;"></span>오늘</span>
+              <span>피크 <strong style="color:var(--accent)">PM 21:00 · 78%</strong></span>
+              <span style="display:flex;align-items:center;gap:3px;"><span style="width:7px;height:7px;background:#fff;border-radius:2px;display:inline-block;opacity:.3;"></span>현재</span>
+            </div>
+          </div>
+        </div>
+        <div class="w">
+          <div class="food-hd"><span class="food-title">🍜 먹거리트릭스</span><span class="food-badge">BETA · 전국 PC방 인기 메뉴</span></div>
+          <div class="food-g" id="foodGrid"></div>
+          <div class="food-foot">💡 유통 마켓 연동 예정 — 식자재 공동 구매·발주</div>
+        </div>
+      </div>
+      <div class="w">
+        <div class="w-hd"><span class="w-title">🏆 게임순위</span><a class="w-link" href="https://www.gametrics.com" target="_blank">GT →</a></div>
+        <div class="tabs"><span class="tab on">주간</span><span class="tab">월간</span></div>
+        <div id="rankList"></div>
+        <div class="rank-lock">가맹점주: TOP 20 무료 · <a href="https://www.gametrics.com" target="_blank">구 GT →</a></div>
+      </div>
+    </div>
+
+    <!-- 지역 현황 + 종합지수+사양 -->
+    <div class="g6040 drag-section" id="ds-region">
+      <div class="drag-handle">⠿ 이동</div>
+      <div class="w">
+        <div class="w-hd"><span class="w-title">🗺 지역별 PC방 현황</span><span class="w-meta">전국 총 13,248개소</span></div>
+        <div class="rgrid" id="regionGrid"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="w">
+          <div class="w-hd"><span class="w-title"><span class="live"></span>종합게임지수</span><a class="w-link" href="https://www.gametrics.com" target="_blank">GT →</a></div>
+          <div class="idx-wrap"><div class="idx-num">266</div><div><div class="idx-chg dn">▼ -12 (-4.32%)</div><div style="font-size:10px;color:var(--text3);margin-top:2px;">2026.04.07</div><div style="display:flex;gap:7px;margin-top:5px;font-size:10px;color:var(--text3);"><span>상승 <strong style="color:var(--red)">127</strong></span><span>하락 <strong style="color:var(--blue)">122</strong></span></div></div></div>
+          <div class="chartw"><svg class="chartsv" viewBox="0 0 270 42"><defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff7a00" stop-opacity=".28"/><stop offset="100%" stop-color="#ff7a00" stop-opacity="0"/></linearGradient></defs><path d="M0,36 L38,30 L76,15 L114,21 L152,9 L192,22 L230,31 L270,37" fill="none" stroke="#ff7a00" stroke-width="1.8" opacity=".9"/><path d="M0,36 L38,30 L76,15 L114,21 L152,9 L192,22 L230,31 L270,37 L270,42 L0,42Z" fill="url(#cg)"/><circle cx="230" cy="31" r="3" fill="#ff7a00"/></svg><div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text3);margin-top:1px;"><span>04.01</span><span>04.07</span></div></div>
+        </div>
+        <div class="w">
+          <div class="w-hd"><span class="w-title">🖥 전국 PC 평균 사양</span><span class="w-meta">2026 Q1</span></div>
+          <div id="specList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 요금 + 다운로드 -->
+    <div class="g2 drag-section" id="ds-price">
+      <div class="drag-handle">⠿ 이동</div>
+      <div class="w">
+        <div class="w-hd"><span class="w-title">💰 전국 시간당 요금</span><span class="w-meta">일반석 기준</span></div>
+        <div id="priceRanges"></div>
+      </div>
+      <div class="w">
+        <div class="w-hd"><span class="w-title">⬇️ 피카 프로그램</span><a class="w-link" href="https://www.pcbang.com/_picadown/main.jsp" target="_blank">다운로드 센터</a></div>
+        <div class="dlg">
+          <div class="dlb" onclick="window.open('https://www.pcbang.com/_picadown/main.jsp','_blank')"><span class="dl-ico">🤖</span><div><div class="dl-nm">피카AI<span class="dl-new">NEW</span></div><div class="dl-ver">v2026.04.06</div></div></div>
+          <div class="dlb" onclick="window.open('https://www.pcbang.com/_picadown/main.jsp','_blank')"><span class="dl-ico">🖥</span><div><div class="dl-nm">피카라이브 4.0</div><div class="dl-ver">v4.0.230</div></div></div>
+          <div class="dlb" onclick="window.open('https://www.pcbang.com/_picadown/main.jsp','_blank')"><span class="dl-ico">📱</span><div><div class="dl-nm">피카에어</div><div class="dl-ver">v3.2.11</div></div></div>
+          <div class="dlb" onclick="window.open('https://www.pcbang.com/_picadown/main.jsp','_blank')"><span class="dl-ico">🔧</span><div><div class="dl-nm">피카툴즈</div><div class="dl-ver">v2.8.5</div></div></div>
+          <div class="dlb" onclick="window.open('https://www.pcbang.com/_picadown/free.jsp','_blank')"><span class="dl-ico">🛡</span><div><div class="dl-nm">V3 백신</div><div class="dl-ver">무료 제공</div></div></div>
+          <div class="dlb"><span class="dl-ico">🎮</span><div><div class="dl-nm">피카플레이</div><div class="dl-ver">B2C 서비스</div></div></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+</div>
+
+
+<!-- ════════════════════════════════
+  VIEW 2 : GT PRO
+════════════════════════════════ -->
+<div class="pv" id="view-pro">
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sbl">게임트릭스 PRO</div>
+    <div class="sbi on"><span class="sbi-ico">📊</span>분석 대시보드</div>
+    <div class="sbi"><span class="sbi-ico">🏆</span>전체 게임 순위</div>
+    <div class="sbi"><span class="sbi-ico">📊</span>장르별 분석</div>
+    <div class="sbi"><span class="sbi-ico">📈</span>기간별 추이</div>
+    <div class="sbi"><span class="sbi-ico">📋</span>GT리포트 아카이브</div>
+    <div class="sbi"><span class="sbi-ico">⬇️</span>CSV 다운로드</div>
+    <div class="sbl">PC방 트릭스</div>
+    <div class="sbi"><span class="sbi-ico">🖥</span>PC사양 트렌드</div>
+    <div class="sbi"><span class="sbi-ico">🗺</span>지역별 인기 게임</div>
+    <div class="sbi"><span class="sbi-ico">💰</span>요금 추이 분석</div>
+    <div class="sbi"><span class="sbi-ico">🍜</span>먹거리트릭스 PRO</div>
+    <div class="sbl">심층 조회</div>
+    <div class="sbi"><span class="sbi-ico">📆</span>1년+ 기간 조회</div>
+    <div class="sbi"><span class="sbi-ico">🔗</span>API 연동 가이드</div>
+  </aside>
+  <main class="main">
+    <div class="welcome" style="background:linear-gradient(135deg,#08102a,#0d1830);">
+      <div class="wt">
+        <h2><em style="color:var(--blue)">PRO</em> 분석 대시보드</h2>
+        <p>전 순위 · 장기 기간 조회 · CSV 다운로드 · 지역별 분석</p>
+      </div>
+      <div class="wq">
+        <button class="wqb" style="background:var(--blue);color:#fff;border:none;">📊 CSV 내보내기</button>
+        <button class="wqb sec">📋 GT리포트</button>
+      </div>
+    </div>
+
+    <div class="g4">
+      <div class="kpi"><div class="kpi-ico">🏆</div><div class="kpi-lbl">집계 게임 수</div><div class="kpi-val bl">3,420</div><div class="kpi-sub">활성 타이틀</div></div>
+      <div class="kpi"><div class="kpi-ico">🏪</div><div class="kpi-lbl">집계 PC방</div><div class="kpi-val ac">9,847</div><div class="kpi-sub">피카 가맹점 실사용</div></div>
+      <div class="kpi"><div class="kpi-ico">✨</div><div class="kpi-lbl">금주 신규 등록</div><div class="kpi-val gr">5</div><div class="kpi-sub">이번 주 등록 게임</div></div>
+      <div class="kpi"><div class="kpi-ico">📋</div><div class="kpi-lbl">GT리포트</div><div class="kpi-val">210<span style="font-size:13px">호</span></div><div class="kpi-sub">2026.04.07 최신</div></div>
+    </div>
+
+    <!-- 조회 필터 -->
+    <div class="w mb">
+      <div class="pro-filter">
+        <div class="pf-group">
+          <div class="pf-lbl">조회 기간</div>
+          <div class="pf-btns">
+            <button class="pfb on">1주</button><button class="pfb">1개월</button><button class="pfb">3개월</button><button class="pfb">6개월</button><button class="pfb">1년</button><button class="pfb">직접 입력</button>
+          </div>
+        </div>
+        <div class="pf-group">
+          <div class="pf-lbl">장르</div>
+          <div class="pf-btns">
+            <button class="pfb on">전체</button><button class="pfb">FPS</button><button class="pfb">AOS</button><button class="pfb">MMORPG</button><button class="pfb">스포츠</button><button class="pfb">배틀로얄</button>
+          </div>
+        </div>
+        <button class="csv-btn">⬇️ CSV 다운로드</button>
+      </div>
+    </div>
+
+    <!-- 장르별 순위 + PC방 트릭스 -->
+    <div class="g2 mb">
+      <div class="w">
+        <div class="w-hd"><span class="w-title">📊 장르별 TOP 순위</span><span class="w-link">전체 장르 →</span></div>
+        <div class="genre-rank-wrap">
+          <div class="genre-col">
+            <div class="genre-hd"><span>AOS</span><span class="genre-tag gt-aos">AOS</span></div>
+            <div class="rrow"><span class="rn r1">1</span><span class="rico">⚔️</span><div class="rinfo"><div class="rname">리그 오브 레전드</div></div><span class="rpct">30.6%</span></div>
+          </div>
+          <div class="genre-col">
+            <div class="genre-hd"><span>FPS</span><span class="genre-tag gt-fps">FPS</span></div>
+            <div class="rrow"><span class="rn r1">1</span><span class="rico">🎯</span><div class="rinfo"><div class="rname">발로란트</div></div><span class="rpct">6.08%</span></div>
+            <div class="rrow"><span class="rn r2">2</span><span class="rico">💣</span><div class="rinfo"><div class="rname">서든어택</div></div><span class="rpct">4.77%</span></div>
+            <div class="rrow"><span class="rn r3">3</span><span class="rico">🦸</span><div class="rinfo"><div class="rname">오버워치2</div></div><span class="rpct">4.69%</span></div>
+          </div>
+          <div class="genre-col">
+            <div class="genre-hd"><span>배틀로얄</span><span class="genre-tag gt-btr">BR</span></div>
+            <div class="rrow"><span class="rn r1">1</span><span class="rico">🔫</span><div class="rinfo"><div class="rname">배틀그라운드</div></div><span class="rpct">8.18%</span></div>
+            <div class="rrow"><span class="rn r2">2</span><span class="rico">💎</span><div class="rinfo"><div class="rname">에이펙스</div></div><span class="rpct">2.19%</span></div>
+          </div>
+          <div class="genre-col">
+            <div class="genre-hd"><span>MMORPG</span><span class="genre-tag gt-rpg">RPG</span></div>
+            <div class="rrow"><span class="rn r1">1</span><span class="rico">🏰</span><div class="rinfo"><div class="rname">아이온2</div></div><span class="rpct">2.73%</span></div>
+            <div class="rrow"><span class="rn r2">2</span><span class="rico">🚀</span><div class="rinfo"><div class="rname">로스트아크</div></div><span class="rpct">2.07%</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="w">
+        <div class="w-hd"><span class="w-title">🖥 PC방 트릭스 — PC사양</span><span class="w-meta">2026 Q1 피카 집계</span></div>
+        <div class="pc-trix-grid">
+          <div class="pt-item"><div class="pt-cat">CPU TOP</div><div class="pt-top">i5-12400F</div><div class="pt-pct">38%</div><div class="pt-runner">↑ i5-13400F 22%</div></div>
+          <div class="pt-item"><div class="pt-cat">GPU TOP</div><div class="pt-top">RTX 3060 12G</div><div class="pt-pct">44%</div><div class="pt-runner">↑ RTX 3070 19%</div></div>
+          <div class="pt-item"><div class="pt-cat">RAM TOP</div><div class="pt-top">DDR4 16GB</div><div class="pt-pct">61%</div><div class="pt-runner">↑ 32GB 18%</div></div>
+          <div class="pt-item"><div class="pt-cat">SSD TOP</div><div class="pt-top">NVMe 512GB</div><div class="pt-pct">72%</div><div class="pt-runner">↑ 1TB 21%</div></div>
+          <div class="pt-item"><div class="pt-cat">모니터 TOP</div><div class="pt-top">27" 165Hz FHD</div><div class="pt-pct">53%</div><div class="pt-runner">↑ 240Hz 14%</div></div>
+          <div class="pt-item"><div class="pt-cat">평균 교체 주기</div><div class="pt-top">3.2년</div><div class="pt-pct" style="color:var(--blue)">-0.4y</div><div class="pt-runner">전년 대비 단축</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 전체 순위 (접기/펼치기) -->
+    <div class="w mb">
+      <div class="w-hd" style="cursor:pointer;" onclick="toggleProRank(this)">
+        <span class="w-title">🏆 전체 게임순위 <span style="font-size:10px;font-weight:500;color:var(--text3);">PRO 전용 · 전 순위</span></span>
+        <div style="display:flex;align-items:center;gap:9px;">
+          <a class="w-link" href="https://www.gametrics.com" target="_blank" onclick="event.stopPropagation()">구 GT →</a>
+          <span id="proRankToggleIcon" style="font-size:11px;color:var(--text3);background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:2px 7px;transition:all .15s;">▼ 펼치기</span>
+        </div>
+      </div>
+      <div id="proRankCollapse" style="display:none;">
+        <div class="pro-rank-hd"><span>순위</span><span>게임</span><span>점유율</span><span>전주 대비</span><span>1개월 평균</span><span>추이</span></div>
+        <div id="proRankList"></div>
+      </div>
+    </div>
+
+    <!-- 먹거리 PRO + GT리포트 -->
+    <div class="g2">
+      <div class="w">
+        <div class="food-hd"><span class="food-title">🍜 먹거리트릭스 PRO</span><span class="food-badge">기간별 상세 조회</span></div>
+        <div style="padding:9px 13px;border-bottom:1px solid var(--border);font-size:10.5px;color:var(--text3);">최근 3개월 인기 메뉴 순위 추이</div>
+        <div class="food-g" id="foodGridPro"></div>
+        <div class="food-foot">유통 마켓 PRO: 지역별·기간별 판매 데이터 분석 제공 예정</div>
+      </div>
+      <div class="w">
+        <div class="w-hd"><span class="w-title">📋 GT리포트 아카이브</span><span class="w-link">전체보기</span></div>
+        <div style="padding:8px 0;">
+          <div style="padding:8px 13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onmouseenter="this.style.background='rgba(255,255,255,.02)'" onmouseleave="this.style.background=''"><div><div style="font-size:12px;font-weight:600;">2026년 4월 1주차</div><div style="font-size:10px;color:var(--text3);">2026.03.30~04.05</div></div><span style="font-size:11px;color:var(--blue);font-weight:700;">PDF ⬇</span></div>
+          <div style="padding:8px 13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onmouseenter="this.style.background='rgba(255,255,255,.02)'" onmouseleave="this.style.background=''"><div><div style="font-size:12px;font-weight:600;">2026년 3월 월간동향</div><div style="font-size:10px;color:var(--text3);">2026.03.01~03.31</div></div><span style="font-size:11px;color:var(--blue);font-weight:700;">PDF ⬇</span></div>
+          <div style="padding:8px 13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;cursor:pointer;" onmouseenter="this.style.background='rgba(255,255,255,.02)'" onmouseleave="this.style.background=''"><div><div style="font-size:12px;font-weight:600;">2026년 3월 4주차</div><div style="font-size:10px;color:var(--text3);">2026.03.23~03.29</div></div><span style="font-size:11px;color:var(--blue);font-weight:700;">PDF ⬇</span></div>
+          <div style="padding:8px 13px;text-align:center;font-size:11.5px;color:var(--blue);cursor:pointer;">전체 아카이브 (210개) →</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+
+
+<!-- ════════════════════════════════
+  VIEW 3 : 게이머 / 크래프트박스 Web
+════════════════════════════════ -->
+<div class="pv" id="view-gamer">
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sbl">크래프트박스</div>
+    <div class="sbi on"><span class="sbi-ico">🎁</span>혜택박스</div>
+    <div class="sbi"><span class="sbi-ico">🏅</span>롤 랭킹전</div>
+    <div class="sbi"><span class="sbi-ico">🎯</span>도전 과제</div>
+    <div class="sbi"><span class="sbi-ico">💳</span>게임 쿠폰</div>
+    <div class="sbi"><span class="sbi-ico">🔄</span>교환소</div>
+    <div class="sbi"><span class="sbi-ico">📚</span>라이브러리</div>
+    <div class="sbl">게임 정보</div>
+    <div class="sbi"><span class="sbi-ico">🏆</span>게임순위 TOP10</div>
+    <div class="sbi"><span class="sbi-ico">📰</span>게임 뉴스</div>
+    <div class="sbi"><span class="sbi-ico">✨</span>신작 게임</div>
+    <div class="sbl">게임 라운지</div>
+    <div class="sbi"><span class="sbi-ico">⚔️</span>LoL 라운지</div>
+    <div class="sbi"><span class="sbi-ico">🔫</span>배그 라운지</div>
+    <div class="sbi"><span class="sbi-ico">🎯</span>발로란트 라운지</div>
+    <div class="sbi"><span class="sbi-ico">➕</span>전체 게임 라운지</div>
+    <div class="sbl">피카플레이</div>
+    <div class="sbi"><span class="sbi-ico">📍</span>내 주변 PC방</div>
+    <div class="sbi"><span class="sbi-ico">🎁</span>이벤트·쿠폰</div>
+  </aside>
+  <main class="main">
+    <!-- 공지 + 마일리지 -->
+    <div class="cb-topstrip">
+      <div class="cb-announce">
+        <span>📢</span>
+        <span><strong>2026-04-06</strong> &nbsp;[중요] NPay 롤 랭킹전 · 최대 100만 마일리지 &amp; iPad Air 증정</span>
+      </div>
+      <div class="cb-stats">
+        <div class="cb-m"><span>M</span><strong>2,002</strong></div>
+        <div class="cb-c"><span>C</span><strong>0</strong></div>
+        <span style="font-size:11.5px;color:var(--text2);">미디어웹 님</span>
+        <button style="font-size:10px;font-weight:700;color:var(--purple);background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.2);border-radius:5px;padding:3px 8px;cursor:pointer;">오늘도 출석 체크!</button>
+      </div>
+    </div>
+
+    <div class="att-banner">
+      <div class="att-text">🗓 <strong>오늘의 출석 체크</strong> — 출석하면 마일리지 50M 즉시 지급!</div>
+      <button class="att-btn">✅ 출석 체크</button>
+    </div>
+
+    <div class="g-2col">
+      <!-- 좌: 내정보 + 랭킹전 -->
+      <div>
+        <div class="myinfo-card">
+          <div class="my-profile">
+            <div class="my-avatar">😎</div>
+            <div><div class="my-name">미디어웹 님</div><div class="my-level">Lv.0 초심자 · 크라운PC 인천 검암점</div></div>
+          </div>
+          <div class="my-badges">
+            <div class="my-badge"><div class="mb-val">2,002</div><div class="mb-lbl">마일리지 M</div></div>
+            <div class="my-badge"><div class="mb-val gr">0</div><div class="mb-lbl">쿠폰 C</div></div>
+            <div class="my-badge"><div class="mb-val" style="color:var(--text3)">0</div><div class="mb-lbl">열쇠 🗝</div></div>
+          </div>
+        </div>
+        <div class="ranking-card">
+          <div class="rc-hd">
+            <div class="rc-title">🏅 롤 랭킹전 시즌4</div>
+            <div class="rc-period">2026.04.01 ~ 2026.04.30</div>
+            <div class="rc-sponsor">NPay 롤 랭킹전 · 최대 1,000,000 M 🏆</div>
+          </div>
+          <div class="rc-my"><span>🏪</span><strong>크라운PC 인천 검암점</strong><span style="margin-left:auto;color:var(--text3);">랭킹전 <strong style="color:var(--yellow)">714위</strong> · 4명</span></div>
+          <div class="rc-body">
+            <div class="rc-col">
+              <div class="rc-col-title">👤 개인 랭킹</div>
+              <div class="rc-row"><span class="rc-rn r1">1</span><span class="rc-name">보그링</span></div>
+              <div class="rc-row"><span class="rc-rn r2">2</span><span class="rc-name">준혁입니다123</span></div>
+              <div class="rc-row"><span class="rc-rn r3">3</span><span class="rc-name">zksxkxk</span></div>
+            </div>
+            <div class="rc-col">
+              <div class="rc-col-title">🏪 팀(PC방) 랭킹</div>
+              <div class="rc-row"><span class="rc-rn r1">1</span><span class="rc-name">oxpc방 자양동점</span></div>
+              <div class="rc-row"><span class="rc-rn r2">2</span><span class="rc-name">OXPC못골점</span></div>
+              <div class="rc-row"><span class="rc-rn r3">3</span><span class="rc-name">짱PC방 병점역점</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 우: 혜택박스 + 도전과제 -->
+      <div>
+        <div class="benefit-box">
+          <div class="bb-hd"><span class="bb-title">🎁 추천 마일리지 혜택</span><span class="w-link">전체보기</span></div>
+          <div class="bb-tabs">
+            <span class="bb-tab on">마일리지 혜택</span><span class="bb-tab">롤 랭킹전</span><span class="bb-tab">도전과제</span><span class="bb-tab">게임 쿠폰</span>
+          </div>
+          <div class="bb-item"><div class="bb-ico" style="background:rgba(255,122,0,.1);">🎮</div><div class="bb-info"><div class="bb-nm">피카플레이 로그인 개편</div><div class="bb-desc">#통합ID #소셜로그인</div></div><div class="bb-reward">M 500</div></div>
+          <div class="bb-item"><div class="bb-ico" style="background:rgba(167,139,250,.1);">🏅</div><div class="bb-info"><div class="bb-nm">NPay 롤 랭킹전</div><div class="bb-desc">최대 1,000,000 M 잭팟</div></div><div class="bb-reward">최대 100만M</div></div>
+          <div class="bb-item"><div class="bb-ico" style="background:rgba(250,204,21,.1);">🟡</div><div class="bb-info"><div class="bb-nm">카카오페이 첫 결제</div><div class="bb-desc">첫 결제 500원 즉시 할인</div></div><div class="bb-reward">C 500</div></div>
+          <div class="bb-item"><div class="bb-ico" style="background:rgba(59,130,246,.1);">⚡</div><div class="bb-info"><div class="bb-nm">젠레스x피카PC방</div><div class="bb-desc">신규 유저 5,000 혜택</div></div><div class="bb-reward">M 5,000</div></div>
+        </div>
+        <div class="quest-card">
+          <div class="qc-hd"><span class="qc-title">🎯 도전 과제</span><span class="qc-sub">인기 게임 플레이하고 마일리지 받자</span></div>
+          <div class="quest-row"><div class="q-ico">⚔️</div><div class="q-desc"><strong>매일 인기게임 1종 60분 플레이</strong></div><div class="q-prog"><div class="q-bar"><div class="q-bar-f" style="width:35%"></div></div><div class="q-pct">35%</div></div><div class="q-reward">🔧×1</div></div>
+          <div class="quest-row"><div class="q-ico">🏅</div><div class="q-desc"><strong>인기게임 누적 5시간 플레이</strong></div><div class="q-prog"><div class="q-bar"><div class="q-bar-f" style="width:60%"></div></div><div class="q-pct">60%</div></div><div class="q-reward">🔧×1</div></div>
+          <div class="quest-row"><div class="q-ico">🔫</div><div class="q-desc"><strong>매일 롤 플레이 타임 60분</strong></div><div class="q-prog"><div class="q-bar"><div class="q-bar-f" style="width:100%"></div></div><div class="q-pct">완료 ✅</div></div><div class="q-reward">🔧×1</div></div>
+          <div class="quest-row"><div class="q-ico">📊</div><div class="q-desc"><strong>롤 누적 플레이 5회 달성</strong></div><div class="q-prog"><div class="q-bar"><div class="q-bar-f" style="width:80%"></div></div><div class="q-pct">4/5회</div></div><div class="q-reward">🔧×1</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 게임 라운지 -->
+    <div class="w mb">
+      <div class="w-hd"><span class="w-title">🎮 게임 라운지</span><span class="w-meta">DC인사이드 · 네이버 게임라운지 형태</span></div>
+      <div class="lounge-grid">
+        <div class="lg-item"><div class="lg-ico">⚔️</div><div class="lg-nm">LoL</div><div class="lg-cnt">12,847개 글</div><div class="lg-hot">🔥 HOT</div></div>
+        <div class="lg-item"><div class="lg-ico">🔫</div><div class="lg-nm">배틀그라운드</div><div class="lg-cnt">5,231개 글</div></div>
+        <div class="lg-item"><div class="lg-ico">🎯</div><div class="lg-nm">발로란트</div><div class="lg-cnt">4,788개 글</div></div>
+        <div class="lg-item"><div class="lg-ico">💣</div><div class="lg-nm">서든어택</div><div class="lg-cnt">3,442개 글</div></div>
+        <div class="lg-item"><div class="lg-ico">⚽</div><div class="lg-nm">FC온라인</div><div class="lg-cnt">3,102개 글</div></div>
+        <div class="lg-item"><div class="lg-ico">🦸</div><div class="lg-nm">오버워치2</div><div class="lg-cnt">2,890개 글</div><div class="lg-hot">↑ 급상승</div></div>
+        <div class="lg-item"><div class="lg-ico">🌿</div><div class="lg-nm">원신</div><div class="lg-cnt">2,143개 글</div></div>
+        <div class="lg-item" style="color:var(--purple);"><div class="lg-ico">➕</div><div class="lg-nm">전체 보기</div><div class="lg-cnt">124개 라운지</div></div>
+      </div>
+    </div>
+
+    <!-- 게임순위 + 게임뉴스 -->
+    <div class="g-2col">
+      <div class="w">
+        <div class="w-hd"><span class="w-title">🏆 게임순위 TOP10</span><span class="w-meta">일반 회원 무료</span></div>
+        <div id="gamerRankList"></div>
+        <div class="rank-lock">🔒 11위 이상은 PRO 전용</div>
+      </div>
+      <div class="w">
+        <div class="w-hd"><span class="w-title">📰 게임 뉴스</span><span class="w-link">더보기</span></div>
+        <div style="padding:4px 0;">
+          <div style="padding:8px 13px;border-bottom:1px solid var(--border);cursor:pointer;" onmouseenter="this.style.background='rgba(255,255,255,.02)'" onmouseleave="this.style.background=''"><div style="font-size:10px;color:var(--text3);margin-bottom:2px;">04.07 · 라이엇</div><div style="font-size:12px;font-weight:500;">라인게임즈, 신작 방치형 RPG 사전 등록</div></div>
+          <div style="padding:8px 13px;border-bottom:1px solid var(--border);cursor:pointer;" onmouseenter="this.style.background='rgba(255,255,255,.02)'" onmouseleave="this.style.background=''"><div style="font-size:10px;color:var(--text3);margin-bottom:2px;">04.07 · 넥슨</div><div style="font-size:12px;font-weight:500;">뮤딜 스타 다이노, 신규 콘텐츠 공개</div></div>
+          <div style="padding:8px 13px;border-bottom:1px solid var(--border);cursor:pointer;" onmouseenter="this.style.background='rgba(255,255,255,.02)'" onmouseleave="this.style.background=''"><div style="font-size:10px;color:var(--text3);margin-bottom:2px;">04.06 · 엔씨소프트</div><div style="font-size:12px;font-weight:500;">월드 오브 워쉽, 독일 구축함 제조 이벤트</div></div>
+          <div style="padding:8px 13px;cursor:pointer;" onmouseenter="this.style.background='rgba(255,255,255,.02)'" onmouseleave="this.style.background=''"><div style="font-size:10px;color:var(--text3);margin-bottom:2px;">04.05 · 킹넷</div><div style="font-size:12px;font-weight:500;">킹넷 '비스트 마스터즈' 글로벌 출시</div></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+</div>
+
+<script>
+const RANKS=[
+  {n:1,i:'⚔️',name:'리그 오브 레전드',pub:'라이엇',pct:30.61,d:'eq'},
+  {n:2,i:'🔫',name:'배틀그라운드',pub:'크래프톤',pct:8.18,d:'eq'},
+  {n:3,i:'🎯',name:'발로란트',pub:'라이엇',pct:6.08,d:'dn'},
+  {n:4,i:'💣',name:'서든어택',pub:'넥슨',pct:4.77,d:'up'},
+  {n:5,i:'⚽',name:'FC온라인',pub:'넥슨',pct:4.52,d:'eq'},
+  {n:6,i:'🦸',name:'오버워치2',pub:'블리자드',pct:4.69,d:'up'},
+  {n:7,i:'🏰',name:'아이온2',pub:'엔씨',pct:2.73,d:'dn'},
+  {n:8,i:'💎',name:'에이펙스 레전드',pub:'EA',pct:2.19,d:'eq'},
+  {n:9,i:'🚀',name:'로스트아크',pub:'스마일게이트',pct:2.07,d:'up'},
+  {n:10,i:'🎲',name:'메이플스토리',pub:'넥슨',pct:2.19,d:'dn'},
+  {n:11,i:'🌿',name:'원신',pub:'호요버스',pct:1.94,d:'up'},
+  {n:12,i:'⚡',name:'젠레스 존 제로',pub:'호요버스',pct:1.78,d:'up'},
+  {n:13,i:'🔮',name:'던전앤파이터',pub:'넥슨',pct:1.56,d:'dn'},
+  {n:14,i:'🏹',name:'리니지W',pub:'엔씨',pct:1.43,d:'eq'},
+  {n:15,i:'🐉',name:'블레이드앤소울2',pub:'엔씨',pct:1.21,d:'dn'},
+];
+const REGIONS=[{n:'서울',c:2180,m:2500,d:'+12'},{n:'경기',c:2640,m:2900,d:'+18'},{n:'인천',c:620,m:800,d:'+3'},{n:'부산',c:780,m:900,d:'+5'},{n:'경남',c:540,m:700,d:'+4'},{n:'대구',c:490,m:600,d:'+2'},{n:'경북',c:310,m:450,d:'+1'},{n:'광주',c:340,m:450,d:'+3'},{n:'전남',c:220,m:350,d:'—'},{n:'전북',c:240,m:350,d:'+1'},{n:'충남',c:280,m:400,d:'+2'},{n:'충북',c:200,m:320,d:'—'},{n:'대전',c:310,m:400,d:'+1'},{n:'세종',c:80,m:150,d:'+2'},{n:'강원',c:270,m:380,d:'+1'},{n:'울산',c:230,m:320,d:'—'},{n:'제주',c:110,m:200,d:'+1'},{n:'기타',c:185,m:300,d:'—'}];
+const SPECS=[{l:'CPU',n:'i5-12400F',p:38,c:'#3b82f6'},{l:'GPU',n:'RTX 3060 12G',p:44,c:'#22c55e'},{l:'RAM',n:'DDR4 16GB',p:61,c:'#a78bfa'},{l:'SSD',n:'NVMe 512GB',p:72,c:'#facc15'},{l:'모니터',n:'27" 165Hz FHD',p:53,c:'#f43f5e'}];
+const FOODS=[{n:1,nm:'불닭볶음면',p:18.4,b:100},{n:2,nm:'김치볶음밥',p:14.2,b:77},{n:3,nm:'치킨너겟',p:11.8,b:64},{n:4,nm:'떡볶이',p:10.3,b:56},{n:5,nm:'햄버거',p:8.9,b:48},{n:6,nm:'핫도그',p:7.2,b:39},{n:7,nm:'나초',p:6.8,b:37},{n:8,nm:'아메리카노',p:6.1,b:33}];
+const HOURLY=[12,8,5,4,6,15,32,45,52,58,61,64,62,59,55,52,56,62,71,78,75,68,55,38];
+window.RANKS = RANKS;
+
+function renderRank(id,limit,bar=true){
+  const el=document.getElementById(id);if(!el)return;
+  let h='';
+  RANKS.slice(0,limit).forEach(r=>{
+    const nc=r.n<=3?`r${r.n}`:'';
+    const dc=r.d==='up'?'rd-up':r.d==='dn'?'rd-dn':'rd-eq';
+    const dt=r.d==='up'?'▲':r.d==='dn'?'▼':'—';
+    const bw=Math.round(r.pct/30.61*100);
+    h+=`<div class="rrow"><span class="rn ${nc}">${r.n}</span><span class="rico">${r.i}</span><div class="rinfo"><div class="rname">${r.name}</div><div class="rpub">${r.pub}</div></div><span class="rpct">${r.pct}%</span><span class="rdelta ${dc}">${dt}</span></div>`;
+    if(bar)h+=`<div class="rbar-w"><div class="rbar"><div class="rbar-f" style="width:${bw}%"></div></div></div>`;
+  });
+  el.innerHTML=h;
+}
+function renderProRank(){
+  const el=document.getElementById('proRankList');if(!el)return;
+  let h='';
+  RANKS.forEach(r=>{
+    const nc=r.n<=3?`r${r.n}`:'';
+    const dc=r.d==='up'?'rd-up':r.d==='dn'?'rd-dn':'rd-eq';
+    const dt=r.d==='up'?'▲':r.d==='dn'?'▼':'—';
+    const avg=(r.pct+(Math.random()*1.2-.6)).toFixed(2);
+    h+=`<div class="pro-rank-row" onmouseenter="this.style.background='rgba(255,255,255,.02)'" onmouseleave="this.style.background=''"><span class="rn ${nc}" style="font-family:'Bebas Neue';font-size:16px;">${r.n}</span><div style="display:flex;align-items:center;gap:7px;"><span style="font-size:14px;">${r.i}</span><div><div style="font-size:12px;font-weight:600;">${r.name}</div><div style="font-size:9.5px;color:var(--text3);">${r.pub}</div></div></div><span style="font-family:'JetBrains Mono';font-size:12px;font-weight:700;">${r.pct}%</span><span class="rdelta ${dc}">${dt}</span><span style="font-family:'JetBrains Mono';font-size:10.5px;color:var(--text3);">${avg}%</span><span style="font-size:10px;color:var(--blue);cursor:pointer;">상세 →</span></div>`;
+  });
+  el.innerHTML=h;
+}
+function renderRegion(){
+  const el=document.getElementById('regionGrid');if(!el)return;
+  el.innerHTML=REGIONS.map(r=>{const w=Math.round(r.c/r.m*100);return`<div class="rg-item"><div class="rg-name">${r.n}</div><div class="rg-cnt">${r.c.toLocaleString()}</div><div class="rg-bar"><div class="rg-bf" style="width:${w}%"></div></div><div class="rg-d">${r.d}</div></div>`;}).join('');
+}
+function renderSpecs(){
+  const el=document.getElementById('specList');if(!el)return;
+  el.innerHTML=SPECS.map(s=>`<div class="spec-i"><span class="spec-lbl">${s.l}</span><div class="spec-bw"><div class="spec-name">${s.n}</div><div class="spec-bar"><div class="spec-bf" style="width:${s.p}%;background:${s.c};"></div></div></div><span class="spec-pct">${s.p}%</span></div>`).join('');
+}
+function renderFood(id){
+  const el=document.getElementById(id);if(!el)return;
+  el.innerHTML=FOODS.map(f=>`<div class="food-i"><div class="food-rn">#${f.n}</div><div class="food-nm">${f.nm}</div><div class="food-bar"><div class="food-bf" style="width:${f.b}%"></div></div><div class="food-pct">${f.p}% 판매 비중</div></div>`).join('');
+}
+function renderHourly(){
+  const el=document.getElementById('hbars');if(!el)return;
+  const mx=Math.max(...HOURLY),nowH=new Date().getHours();
+  el.innerHTML=HOURLY.map((v,i)=>{const ht=Math.round(v/mx*42)+4,isNow=i===nowH;return`<div class="hbw"><div class="hb${isNow?' now':''}" data-v="${v}%" style="height:${ht}px"></div>${i%6===0?`<span class="hlbl">${i}시</span>`:'<span class="hlbl" style="opacity:0">·</span>'}</div>`;}).join('');
+}
+function renderNotices(){
+  const el=document.getElementById('noticeList');if(!el)return;
+  const items=[{t:'t-ai',l:'피카AI',tx:'<strong>피카AI 업데이트</strong> [카운터 2026040601]',d:'04.06'},{t:'t-gt',l:'게임트릭스',tx:'2026년 4월 1주차 주간게임입점황 발행',d:'04.07'},{t:'t-food',l:'먹거리트릭스',tx:'<strong>불닭볶음면</strong> 3개월 연속 1위 — 4월 통계',d:'04.05'},{t:'t-sys',l:'시스템',tx:'라이브/AI PC방 이용약관 개정 안내',d:'03.30'},{t:'t-comm',l:'커뮤니티',tx:'사장님쉼터 베타 오픈 시작',d:'04.01'}];
+  el.innerHTML=items.map(i=>`<div class="ni"><span class="ntag ${i.t}">${i.l}</span><span class="n-text">${i.tx}</span><span class="n-date">${i.d}</span></div>`).join('');
+}
+function renderPriceRanges(){
+  const el=document.getElementById('priceRanges');if(!el)return;
+  const data=[{l:'서울',min:1200,max:1800,avg:1520},{l:'경기',min:1000,max:1600,avg:1380},{l:'지방',min:800,max:1400,avg:1150}];
+  el.innerHTML=data.map(d=>{const ab=800,am=1800,lp=(d.min-ab)/(am-ab)*100,wp=(d.max-d.min)/(am-ab)*100,ap=(d.avg-ab)/(am-ab)*100;return`<div class="price-range-row"><span class="prl">${d.l}</span><div style="flex:1;"><div class="pr-track"><div class="pr-fill" style="left:${lp}%;width:${wp}%;"></div><div class="pr-avg" style="left:${ap}%;"></div></div><div class="pr-vals"><span>₩${d.min.toLocaleString()}</span><span style="color:var(--text2)">평균 ₩${d.avg.toLocaleString()}</span><span>₩${d.max.toLocaleString()}</span></div></div></div>`;}).join('');
+}
+function toggleProRank(hd){
+  const c=document.getElementById('proRankCollapse'),ic=document.getElementById('proRankToggleIcon');
+  if(c.style.display==='none'){c.style.display='block';ic.textContent='▲ 접기';}
+  else{c.style.display='none';ic.textContent='▼ 펼치기';}
+}
+function toggleEdit(){
+  const m=document.querySelector('#view-owner .main'),b=document.getElementById('editToggle');
+  if(m.classList.toggle('edit-mode')){b.classList.add('active');b.textContent='✅ 편집 완료';}
+  else{b.classList.remove('active');b.textContent='✏️ 편집 모드';}
+}
+function applyView(type){
+  document.querySelectorAll('.pv').forEach(v=>v.classList.remove('on'));
+  const v=document.getElementById('view-'+type);
+  if(v) v.classList.add('on');
+}
+function setUserChip(s){
+  const nm=document.getElementById('uname'),ro=document.getElementById('urole'),av=document.getElementById('uav');
+  nm.textContent=s.name; ro.textContent=s.roleLabel; av.textContent=s.avatar;
+  if(s.role==='owner'){ro.style.color='var(--accent)';av.style.background='linear-gradient(135deg,var(--accent),#ff4500)';}
+  else if(s.role==='pro'){ro.style.color='var(--blue)';av.style.background='linear-gradient(135deg,#3b82f6,#1d4ed8)';}
+  else{ro.style.color='var(--purple)';av.style.background='linear-gradient(135deg,#a78bfa,#7c3aed)';}
+}
+function doLogout(){ PicaAuth.logout(); window.location.href='login.html'; }
+function goRanking(e){ e.preventDefault(); window.location.href='index.html#ranking'; }
+function goTools(e){ e.preventDefault(); window.location.href='index.html#tools'; }
+function goCommunity(e){ e.preventDefault(); window.location.href='index.html#community'; }
+document.querySelectorAll('.tab,.bb-tab,.pfb').forEach(t=>{
+  t.addEventListener('click',function(){
+    this.closest('.tabs,.bb-tabs,.pf-btns').querySelectorAll('.tab,.bb-tab,.pfb').forEach(x=>x.classList.remove('on'));
+    this.classList.add('on');
+  });
+});
+renderRank('rankList',10,true);
+renderRank('gamerRankList',10,false);
+renderProRank();
+renderRegion();
+renderSpecs();
+renderFood('foodGrid');
+renderFood('foodGridPro');
+renderHourly();
+renderNotices();
+renderPriceRanges();
+</script>
+
+<script src="assets/auth.js"></script>
+<script src="assets/api.js"></script>
+<script>
+(function bootstrapAuth(){
+  const s = PicaAuth.requireSession('login.html');
+  if(!s) return;
+  setUserChip(s);
+  applyView(s.role);
+  PicaApi.hydrateDashboard();
+})();
+</script>
+</body>
+</html>

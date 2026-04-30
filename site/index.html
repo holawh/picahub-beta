@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PICA HUB — PC방닷컴 × 게임트릭스 통합 플랫폼</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Bebas+Neue&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a0c10; --bg2:#0f1219; --bg3:#151a24;
+  --surface:#1a2030; --surface2:#212840;
+  --border:rgba(255,255,255,0.07); --border-accent:rgba(255,140,0,0.3);
+  --accent:#ff8c00; --accent2:#ffb347; --accent-glow:rgba(255,140,0,0.15);
+  --blue:#3b82f6; --blue-dim:rgba(59,130,246,0.15);
+  --green:#22c55e; --red:#ef4444; --yellow:#facc15; --purple:#a78bfa;
+  --text:#e8eaf0; --text2:#9aa3b5; --text3:#5a6478;
+  --rank1:#ffd700; --rank2:#c0c0c0; --rank3:#cd7f32;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* ── HEADER ── */
+.header{position:sticky;top:0;z-index:100;background:rgba(10,12,16,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px;}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none;}
+.logo-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),#ff4500);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:18px;color:#fff;box-shadow:0 0 16px rgba(255,140,0,.35);}
+.logo-text{font-size:18px;font-weight:900;color:var(--text);letter-spacing:-.5px;}
+.logo-text span{color:var(--accent);}
+.logo-badge{font-size:9px;font-weight:700;color:var(--accent);background:rgba(255,140,0,.12);border:1px solid rgba(255,140,0,.3);border-radius:4px;padding:2px 5px;letter-spacing:.5px;}
+.gnb{display:flex;align-items:center;gap:2px;}
+.gnb a{color:var(--text2);font-size:13.5px;font-weight:500;text-decoration:none;padding:6px 14px;border-radius:6px;transition:all .15s;cursor:pointer;position:relative;}
+.gnb a:hover,.gnb a.active{color:var(--text);background:var(--surface);}
+.gnb a.active::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:20px;height:2px;background:var(--accent);border-radius:2px;}
+.gnb-badge{font-size:9px;background:var(--accent);color:#000;border-radius:4px;padding:1px 4px;margin-left:4px;font-weight:700;}
+.header-actions{display:flex;align-items:center;gap:8px;}
+.btn-login{font-size:13px;font-weight:600;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 16px;cursor:pointer;transition:all .15s;}
+.btn-login:hover{border-color:rgba(255,255,255,.2);}
+.btn-cta{font-size:13px;font-weight:700;color:#000;background:linear-gradient(135deg,var(--accent),#ff6b00);border:none;border-radius:8px;padding:7px 18px;cursor:pointer;transition:all .15s;box-shadow:0 2px 12px rgba(255,140,0,.3);}
+.btn-cta:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(255,140,0,.45);}
+
+/* Logged-in user chip */
+.user-chip{display:flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:4px 13px 4px 5px;cursor:pointer;transition:all .15s;}
+.user-chip:hover{border-color:rgba(255,255,255,.15);}
+.user-avatar{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#ff4500);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;}
+.user-name{font-size:12px;font-weight:700;}
+.user-role{font-size:10px;color:var(--accent);}
+
+/* ── PAGES ── */
+.page{display:none;animation:fadeIn .25s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ── HERO ── */
+.hero{position:relative;overflow:hidden;padding:80px 24px 60px;background:linear-gradient(180deg,#0d1020 0%,var(--bg) 100%);}
+.hero-grid{position:absolute;inset:0;opacity:.04;background-image:linear-gradient(rgba(255,140,0,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,140,0,.5) 1px,transparent 1px);background-size:60px 60px;}
+.hero-glow{position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:700px;height:400px;background:radial-gradient(ellipse,rgba(255,140,0,.08) 0%,transparent 70%);pointer-events:none;}
+.hero-inner{max-width:1400px;margin:0 auto;position:relative;}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--accent);background:rgba(255,140,0,.08);border:1px solid rgba(255,140,0,.25);border-radius:20px;padding:5px 12px;margin-bottom:20px;letter-spacing:1px;}
+.hero-tag::before{content:'';width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-size:52px;font-weight:900;line-height:1.1;letter-spacing:-1.5px;margin-bottom:16px;}
+.hero h1 em{color:var(--accent);font-style:normal;}
+.hero p{font-size:17px;color:var(--text2);line-height:1.7;max-width:520px;margin-bottom:32px;font-weight:300;}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:60px;}
+.btn-hero-primary{font-size:15px;font-weight:700;color:#000;background:linear-gradient(135deg,var(--accent),#ff6b00);border:none;border-radius:10px;padding:13px 28px;cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(255,140,0,.35);}
+.btn-hero-primary:hover{transform:translateY(-2px);box-shadow:0 6px 30px rgba(255,140,0,.5);}
+.btn-hero-secondary{font-size:15px;font-weight:600;color:var(--text);background:transparent;border:1px solid var(--border);border-radius:10px;padding:13px 28px;cursor:pointer;transition:all .2s;}
+.btn-hero-secondary:hover{border-color:rgba(255,255,255,.25);background:var(--surface);}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.stat-item{background:var(--bg2);padding:20px 24px;transition:background .15s;}
+.stat-item:hover{background:var(--surface);}
+.stat-num{font-family:'Bebas Neue';font-size:36px;color:var(--accent);letter-spacing:1px;line-height:1;}
+.stat-label{font-size:12px;color:var(--text3);margin-top:4px;font-weight:500;}
+.live-dot{display:inline-block;width:7px;height:7px;background:var(--red);border-radius:50%;margin-right:5px;animation:pulse 1.5s infinite;}
+
+/* ── MEMBER CARDS ── */
+.member-section{max-width:1400px;margin:0 auto;padding:60px 24px;}
+.section-title{font-size:24px;font-weight:900;letter-spacing:-.5px;margin-bottom:6px;}
+.section-sub{font-size:14px;color:var(--text3);margin-bottom:28px;}
+.member-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.member-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 24px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.member-card:hover{border-color:var(--card-border,rgba(255,140,0,.3));transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,.3);}
+.card-icon{font-size:32px;margin-bottom:14px;}
+.card-title{font-size:17px;font-weight:800;margin-bottom:6px;}
+.card-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:16px;}
+.card-perks{display:flex;flex-direction:column;gap:5px;margin-bottom:18px;}
+.perk{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2);}
+.perk::before{content:'✓';color:var(--green);font-weight:700;}
+.card-btn{width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit;}
+.card-btn:hover{background:var(--surface2);}
+.card-btn.primary{background:linear-gradient(135deg,var(--accent),#ff6b00);border-color:transparent;color:#000;}
+.card-badge{position:absolute;top:16px;right:16px;font-size:10px;font-weight:700;border-radius:6px;padding:3px 8px;}
+.badge-pica{background:rgba(255,140,0,.15);color:var(--accent);border:1px solid rgba(255,140,0,.3);}
+.badge-pro{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.3);}
+.badge-free{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.25);}
+
+/* ── MAIN GRID ── */
+.main-grid{max-width:1400px;margin:0 auto;padding:0 24px 60px;display:grid;grid-template-columns:1fr 320px;gap:20px;}
+.left-panel{display:flex;flex-direction:column;gap:20px;}
+
+/* ── WIDGETS ── */
+.widget{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.widget-header{padding:18px 20px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.widget-title{font-size:15px;font-weight:800;}
+.widget-meta{font-size:12px;color:var(--text3);}
+.widget-link{font-size:12px;color:var(--accent);cursor:pointer;text-decoration:none;font-weight:600;}
+.widget-link:hover{text-decoration:underline;}
+.rank-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 20px;}
+.rank-tab{font-size:12px;font-weight:600;color:var(--text3);padding:10px 14px;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;margin-bottom:-1px;}
+.rank-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.rank-tab:hover{color:var(--text);}
+.rank-list{padding:8px 0;}
+.rank-item{display:flex;align-items:center;gap:12px;padding:9px 20px;transition:background .1s;cursor:pointer;}
+.rank-item:hover{background:rgba(255,255,255,.03);}
+.rank-num{width:22px;text-align:center;font-family:'Bebas Neue';font-size:17px;color:var(--text3);flex-shrink:0;}
+.rank-num.r1{color:var(--rank1)}.rank-num.r2{color:var(--rank2)}.rank-num.r3{color:var(--rank3)}
+.rank-icon{width:36px;height:36px;border-radius:8px;background:var(--bg3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.rank-info{flex:1;min-width:0;}
+.rank-name{font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rank-company{font-size:11px;color:var(--text3);}
+.rank-pct{font-family:'JetBrains Mono';font-size:13px;font-weight:700;color:var(--text2);flex-shrink:0;}
+.rank-delta{font-size:10px;font-weight:700;padding:2px 5px;border-radius:4px;flex-shrink:0;}
+.delta-up{color:var(--red);background:rgba(239,68,68,.1);}
+.delta-down{color:var(--blue);background:rgba(59,130,246,.1);}
+.delta-same{color:var(--text3);background:var(--bg3);}
+
+/* ── NOTICES ── */
+.notice-list{padding:4px 0;}
+.notice-item{display:flex;align-items:flex-start;gap:10px;padding:10px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;}
+.notice-item:last-child{border-bottom:none;}
+.notice-item:hover{background:rgba(255,255,255,.02);}
+.notice-tag{font-size:10px;font-weight:700;border-radius:4px;padding:2px 6px;white-space:nowrap;flex-shrink:0;margin-top:2px;}
+.tag-pica{background:rgba(255,140,0,.15);color:var(--accent);}
+.tag-gt{background:rgba(59,130,246,.15);color:var(--blue);}
+.tag-comm{background:rgba(34,197,94,.1);color:var(--green);}
+.tag-sys{background:rgba(255,255,255,.07);color:var(--text3);}
+.notice-text{font-size:13px;color:var(--text2);line-height:1.5;flex:1;}
+.notice-text strong{color:var(--text);font-weight:600;}
+.notice-date{font-size:11px;color:var(--text3);white-space:nowrap;flex-shrink:0;}
+
+/* ── COMMUNITY ── */
+.comm-list{padding:4px 0;}
+.comm-item{padding:10px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;}
+.comm-item:last-child{border-bottom:none;}
+.comm-item:hover{background:rgba(255,255,255,.02);}
+.comm-title{font-size:13px;font-weight:500;margin-bottom:4px;}
+.comm-meta{display:flex;gap:10px;font-size:11px;color:var(--text3);}
+.post-hot{font-size:10px;font-weight:700;color:var(--red);background:rgba(239,68,68,.1);border-radius:4px;padding:1px 5px;margin-left:4px;}
+
+/* ── INDEX WIDGET ── */
+.index-display{padding:24px 20px;display:flex;align-items:center;justify-content:space-between;}
+.index-num{font-family:'Bebas Neue';font-size:64px;color:var(--text);line-height:1;}
+.index-info{text-align:right;}
+.index-change{font-size:13px;font-family:'JetBrains Mono';}
+.index-change.down{color:var(--blue);}
+.index-change.up{color:var(--red);}
+.index-date{font-size:11px;color:var(--text3);margin-top:4px;}
+.mini-chart{padding:0 20px 20px;}
+.chart-svg{width:100%;height:100%;}
+
+/* ── QUICK TOOLS ── */
+.quick-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:16px;}
+.quick-btn{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px 12px;cursor:pointer;transition:all .15s;text-align:center;}
+.quick-btn:hover{border-color:rgba(255,140,0,.3);background:var(--surface2);}
+.quick-btn-icon{font-size:22px;margin-bottom:6px;}
+.quick-btn-label{font-size:11.5px;font-weight:600;color:var(--text2);}
+
+/* ── AD BANNER ── */
+.ad-banner{background:linear-gradient(135deg,#1a1030 0%,#0f1a2e 100%);border:1px solid rgba(59,130,246,.2);border-radius:12px;padding:18px 16px;cursor:pointer;transition:all .15s;}
+.ad-banner:hover{border-color:rgba(59,130,246,.4);}
+.ad-label{font-size:9px;color:var(--text3);margin-bottom:6px;letter-spacing:1px;}
+.ad-title{font-size:15px;font-weight:800;margin-bottom:4px;}
+.ad-sub{font-size:12px;color:var(--text2);margin-bottom:12px;}
+.ad-cta{font-size:12px;font-weight:700;color:var(--blue);}
+
+/* ── PAGE HEADER ── */
+.page-header{background:var(--bg2);border-bottom:1px solid var(--border);padding:32px 24px 24px;}
+.page-header-inner{max-width:1400px;margin:0 auto;}
+.page-title{font-size:28px;font-weight:900;letter-spacing:-.5px;margin-bottom:4px;}
+.page-subtitle{font-size:14px;color:var(--text3);}
+.page-content{max-width:1400px;margin:0 auto;padding:28px 24px;}
+
+/* ── FILTER BAR ── */
+.filter-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:24px;}
+.filter-label{font-size:13px;color:var(--text3);font-weight:500;}
+.filter-btn{font-size:12.5px;font-weight:600;border-radius:8px;padding:6px 14px;cursor:pointer;transition:all .15s;background:var(--surface);border:1px solid var(--border);color:var(--text2);font-family:inherit;}
+.filter-btn.active,.filter-btn:hover{background:var(--surface2);border-color:rgba(255,140,0,.3);color:var(--text);}
+
+/* ── RANKING TABLE ── */
+.ranking-table{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.table-head{display:grid;grid-template-columns:60px 1fr 120px 100px 80px 90px;padding:12px 20px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.5px;}
+.table-row{display:grid;grid-template-columns:60px 1fr 120px 100px 80px 90px;padding:12px 20px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer;transition:background .1s;}
+.table-row:last-child{border-bottom:none;}
+.table-row:hover{background:rgba(255,255,255,.02);}
+.t-rank{font-family:'Bebas Neue';font-size:20px;color:var(--text3);}
+.t-rank.r1{color:var(--rank1)}.t-rank.r2{color:var(--rank2)}.t-rank.r3{color:var(--rank3)}
+.t-game{display:flex;align-items:center;gap:12px;}
+.t-game-icon{width:40px;height:40px;border-radius:8px;background:var(--bg3);font-size:22px;display:flex;align-items:center;justify-content:center;}
+.t-game-name{font-size:14px;font-weight:700;}
+.t-game-pub{font-size:11px;color:var(--text3);margin-top:2px;}
+.t-pct{font-family:'JetBrains Mono';font-size:15px;font-weight:700;}
+.t-bar{width:100%;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+.t-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),#ff6b00);}
+.t-change-cell{display:flex;flex-direction:column;gap:3px;}
+.t-week{font-size:11px;color:var(--text3);}
+.pro-lock-row{padding:20px;text-align:center;border-top:1px solid var(--border);font-size:13px;color:var(--text3);}
+.pro-lock-row a{color:var(--accent);cursor:pointer;font-weight:600;}
+
+/* ── TOP NAV ── */
+.top-nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;}
+.top-nav-inner{max-width:1400px;margin:0 auto;display:flex;}
+.top-nav-btn{font-size:13px;font-weight:600;color:var(--text3);padding:13px 18px;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;margin-bottom:-1px;}
+.top-nav-btn:hover{color:var(--text);}
+.top-nav-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+
+/* ── COMMUNITY PAGE ── */
+.comm-layout{display:grid;grid-template-columns:200px 1fr 260px;gap:20px;}
+.comm-sidebar{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;height:fit-content;}
+.comm-sidebar-title{font-size:12px;font-weight:700;color:var(--text3);margin-bottom:12px;letter-spacing:.5px;}
+.comm-cat{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:8px;cursor:pointer;transition:all .15s;font-size:13px;color:var(--text2);margin-bottom:2px;}
+.comm-cat:hover,.comm-cat.active{background:var(--surface2);color:var(--text);}
+.comm-cat.active{font-weight:700;}
+.comm-cat-count{font-size:11px;color:var(--text3);}
+.comm-board{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.comm-board-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.comm-board-title{font-size:15px;font-weight:800;}
+.btn-write{font-size:12px;font-weight:700;color:#000;background:linear-gradient(135deg,var(--accent),#ff6b00);border:none;border-radius:7px;padding:7px 16px;cursor:pointer;font-family:inherit;}
+.post-item{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;}
+.post-item:last-child{border-bottom:none;}
+.post-item:hover{background:rgba(255,255,255,.02);}
+.post-category{font-size:10px;font-weight:700;border-radius:4px;padding:2px 7px;white-space:nowrap;flex-shrink:0;}
+.cat-free{background:rgba(34,197,94,.1);color:var(--green);}
+.cat-ops{background:rgba(255,140,0,.1);color:var(--accent);}
+.cat-hire{background:rgba(59,130,246,.1);color:var(--blue);}
+.cat-used{background:rgba(168,85,247,.1);color:#a855f7;}
+.post-title{flex:1;font-size:13.5px;font-weight:500;}
+.post-stats{display:flex;gap:10px;font-size:11px;color:var(--text3);flex-shrink:0;}
+.comm-right{display:flex;flex-direction:column;gap:16px;}
+.popular-posts{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;}
+.pop-title{font-size:13px;font-weight:800;margin-bottom:12px;}
+.pop-item{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.pop-item:last-child{border-bottom:none;}
+.pop-num{font-family:'Bebas Neue';font-size:16px;color:var(--accent);width:20px;flex-shrink:0;}
+.pop-text{font-size:12px;color:var(--text2);line-height:1.4;}
+
+/* ── TOOLS PAGE ── */
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
+.tool-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.tool-card::after{content:'';position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle at top right,var(--tool-glow,rgba(255,140,0,.06)),transparent 70%);}
+.tool-card:hover{border-color:var(--tool-border,rgba(255,140,0,.3));transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.3);}
+.tool-icon{font-size:36px;margin-bottom:14px;}
+.tool-name{font-size:16px;font-weight:800;margin-bottom:4px;}
+.tool-desc{font-size:12.5px;color:var(--text2);line-height:1.6;margin-bottom:14px;}
+.tool-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.tool-tag{font-size:10px;background:var(--bg3);color:var(--text3);border-radius:4px;padding:2px 7px;}
+.tool-status{position:absolute;top:14px;right:14px;font-size:10px;font-weight:700;border-radius:5px;padding:2px 7px;}
+.status-live{background:rgba(34,197,94,.15);color:var(--green);}
+.status-new{background:rgba(255,140,0,.15);color:var(--accent);}
+.status-beta{background:rgba(59,130,246,.15);color:var(--blue);}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;}
+.modal-overlay.active{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:32px;width:420px;max-width:95vw;position:relative;animation:modalIn .2s ease;}
+@keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:none}}
+.modal-close{position:absolute;top:16px;right:16px;width:28px;height:28px;border-radius:50%;background:var(--surface);border:none;color:var(--text2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.modal-title{font-size:22px;font-weight:900;margin-bottom:6px;letter-spacing:-.5px;}
+.modal-sub{font-size:13px;color:var(--text3);margin-bottom:24px;}
+.modal-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;}
+.modal-tab{font-size:14px;font-weight:600;padding:8px 16px;cursor:pointer;color:var(--text3);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;}
+.modal-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.member-type-select{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.mtype-btn{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;transition:all .15s;text-align:center;}
+.mtype-btn:hover,.mtype-btn.selected{border-color:rgba(255,140,0,.4);background:var(--surface2);}
+.mtype-icon{font-size:24px;margin-bottom:6px;}
+.mtype-label{font-size:12px;font-weight:700;color:var(--text2);}
+.form-group{margin-bottom:14px;}
+.form-label{font-size:12px;font-weight:600;color:var(--text3);margin-bottom:6px;display:block;}
+.form-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13.5px;font-family:inherit;outline:none;transition:border .15s;}
+.form-input:focus{border-color:rgba(255,140,0,.4);}
+.btn-full{width:100%;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:4px;}
+.btn-full.primary{background:linear-gradient(135deg,var(--accent),#ff6b00);border:none;color:#000;}
+.btn-full.primary:hover{opacity:.9;transform:translateY(-1px);}
+.or-divider{text-align:center;font-size:12px;color:var(--text3);margin:12px 0;position:relative;}
+.or-divider::before,.or-divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border);}
+.or-divider::before{left:0;}.or-divider::after{right:0;}
+
+/* ── MEMBER DASHBOARD (로그인 후) ── */
+.dash-layout{display:grid;grid-template-columns:210px 1fr;min-height:calc(100vh - 60px);}
+.dash-sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:16px 10px;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto;}
+.dsb-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:1px;padding:8px 10px 4px;}
+.dsb-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;cursor:pointer;transition:all .15s;font-size:13px;color:var(--text2);margin-bottom:1px;}
+.dsb-item:hover{background:var(--surface);color:var(--text);}
+.dsb-item.on{background:rgba(255,140,0,.1);color:var(--accent);font-weight:700;}
+.dsb-item.on::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:18px;background:var(--accent);border-radius:0 3px 3px 0;}
+.dsb-item{position:relative;}
+.dsb-ico{font-size:14px;width:16px;text-align:center;flex-shrink:0;}
+.dsb-badge{margin-left:auto;font-size:9px;font-weight:700;border-radius:8px;padding:1px 5px;background:var(--accent);color:#000;}
+.dash-main{padding:20px 24px 60px;min-width:0;}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:15px 17px;transition:all .15s;cursor:default;position:relative;overflow:hidden;}
+.kpi:hover{border-color:rgba(255,140,0,.2);transform:translateY(-2px);}
+.kpi-ico{font-size:20px;margin-bottom:7px;}
+.kpi-lbl{font-size:10.5px;font-weight:600;color:var(--text3);margin-bottom:3px;}
+.kpi-val{font-family:'Bebas Neue';font-size:30px;color:var(--text);line-height:1;letter-spacing:.5px;}
+.kpi-val.ac{color:var(--accent);}
+.kpi-val.gr{color:var(--green);}
+.kpi-val.bl{color:var(--blue);}
+.kpi-val.yw{color:var(--yellow);}
+.kpi-sub{font-size:10px;color:var(--text3);margin-top:4px;}
+.kpi-delta{font-size:10px;font-weight:700;margin-top:3px;}
+.kpi-delta.up{color:var(--green);}
+.kpi-delta.dn{color:var(--red);}
+
+/* welcome banner */
+.welcome{background:linear-gradient(135deg,#120a00 0%,#14102a 100%);border:1px solid rgba(255,140,0,.2);border-radius:14px;padding:16px 22px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden;}
+.welcome::before{content:'';position:absolute;top:-50px;right:60px;width:180px;height:180px;background:radial-gradient(circle,rgba(255,140,0,.08),transparent 70%);pointer-events:none;}
+.wt h2{font-size:17px;font-weight:900;letter-spacing:-.5px;margin-bottom:3px;}
+.wt h2 em{color:var(--accent);font-style:normal;}
+.wt p{font-size:12px;color:var(--text2);}
+.wq{display:flex;gap:7px;}
+.wqb{font-size:12px;font-weight:700;border-radius:7px;padding:6px 13px;cursor:pointer;transition:all .15s;font-family:inherit;}
+.wqb.pri{background:var(--accent);color:#000;border:none;}
+.wqb.sec{background:transparent;color:var(--text2);border:1px solid var(--border);}
+.wqb:hover{opacity:.85;transform:translateY(-1px);}
+
+/* hourly bar chart */
+.hbars{display:flex;align-items:flex-end;gap:3px;height:52px;padding:12px 14px 0;}
+.hbw{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.hb{width:100%;border-radius:3px 3px 0 0;background:linear-gradient(180deg,var(--accent),rgba(255,140,0,.3));position:relative;cursor:pointer;}
+.hb.now{background:linear-gradient(180deg,#fff,rgba(255,255,255,.35));}
+.hlbl{font-size:7.5px;color:var(--text3);}
+.h-meta{display:flex;justify-content:space-between;padding:4px 14px 10px;font-size:10px;color:var(--text3);}
+
+/* grid helpers */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:14px;}
+.g7030{display:grid;grid-template-columns:1fr 300px;gap:14px;margin-bottom:14px;}
+.mb14{margin-bottom:14px;}
+
+/* w card */
+.w{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.w-hd{padding:12px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.w-title{font-size:13.5px;font-weight:800;}
+.w-meta{font-size:11px;color:var(--text3);}
+.w-link{font-size:12px;color:var(--accent);cursor:pointer;font-weight:600;}
+
+/* mini stat row */
+.msr{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);}
+.msr:last-child{border-bottom:none;}
+.msr-l{font-size:12px;color:var(--text2);}
+.msr-v{font-family:'JetBrains Mono';font-size:12px;font-weight:700;}
+
+/* quick chips */
+.qrow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.qchip{display:flex;align-items:center;gap:5px;background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:5px 11px;cursor:pointer;font-size:11.5px;font-weight:600;color:var(--text2);transition:all .15s;}
+.qchip:hover{border-color:rgba(255,140,0,.3);color:var(--text);background:var(--surface2);}
+
+/* tabs */
+.tabs{display:flex;border-bottom:1px solid var(--border);padding:0 14px;}
+.tab{font-size:11.5px;font-weight:600;color:var(--text3);padding:9px 11px;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;margin-bottom:-1px;}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tab:hover:not(.active){color:var(--text);}
+
+/* pro badge */
+.pro-wall{padding:16px;background:rgba(59,130,246,.04);border:1px solid rgba(59,130,246,.15);border-radius:10px;margin:10px;text-align:center;font-size:12px;color:var(--text3);}
+.pro-wall a{color:var(--blue);font-weight:700;cursor:pointer;}
+
+/* ── FOOTER ── */
+.footer{border-top:1px solid var(--border);background:var(--bg2);padding:40px 24px 32px;}
+.footer-inner{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:200px 1fr;gap:40px;align-items:start;}
+.footer-links{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+.footer-col-title{font-size:12px;font-weight:800;color:var(--text2);margin-bottom:10px;letter-spacing:.5px;}
+.footer-link{font-size:12px;color:var(--text3);display:block;margin-bottom:6px;cursor:pointer;transition:color .15s;}
+.footer-link:hover{color:var(--text2);}
+.footer-bottom{max-width:1400px;margin:24px auto 0;padding-top:20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--text3);}
+
+/* view switcher (demo) */
+.view-sw{display:flex;align-items:center;gap:4px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:3px;}
+.vsb{font-size:11px;font-weight:700;padding:4px 10px;border-radius:5px;cursor:pointer;color:var(--text3);transition:all .15s;border:none;background:none;font-family:inherit;}
+.vsb.on{background:var(--accent);color:#000;}
+.vsb.pro.on{background:var(--blue);color:#fff;}
+.vsb.gamer.on{background:var(--purple);color:#fff;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <a class="logo" onclick="showPage('home')">
+      <div class="logo-mark">P</div>
+      <span class="logo-text">PICA<span>HUB</span></span>
+      <span class="logo-badge">BETA</span>
+    </a>
+    <nav class="gnb" id="gnb-public">
+      <a onclick="showPage('ranking')" id="nav-ranking">게임순위<span class="gnb-badge">LIVE</span></a>
+      <a onclick="showPage('tools')" id="nav-tools">피카 솔루션</a>
+      <a onclick="showPage('community')" id="nav-community">커뮤니티</a>
+      <a href="https://www.pcbang.com/_picaNews/notice_list.jsp" target="_blank">공지사항</a>
+      <a href="https://www.gametrics.com" target="_blank">구 게임트릭스</a>
+      <a href="https://www.pcbang.com" target="_blank">PC방닷컴</a>
+    </nav>
+    <div class="header-actions">
+      <div id="header-public" style="display:flex;gap:8px;">
+        <a class="btn-login" href="login.html" style="display:inline-block;text-decoration:none;line-height:1.4;">로그인</a>
+        <a class="btn-cta" href="login.html" style="display:inline-block;text-decoration:none;line-height:1.4;">무료 가입</a>
+      </div>
+      <div id="header-loggedin" style="display:none;align-items:center;gap:8px;">
+        <a class="user-chip" href="dashboard.html" style="text-decoration:none;color:inherit;">
+          <div class="user-avatar" id="avatar-char">김</div>
+          <div>
+            <div class="user-name" id="user-display-name">김사장님</div>
+            <div class="user-role" id="user-display-role">피카 가맹점주</div>
+          </div>
+        </a>
+        <button class="btn-login" onclick="doLogout()" style="font-size:12px;padding:6px 12px;">로그아웃</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════ HOME ══════════════ -->
+<div class="page active" id="page-home">
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-inner">
+      <div class="hero-tag">✦ PC방닷컴 × 게임트릭스 통합 플랫폼</div>
+      <h1>PC방의 모든 것,<br><em>하나로 연결한다</em></h1>
+      <p>관리 솔루션부터 실시간 게임 순위, 커뮤니티까지.<br>전국 피카 가맹점 점주와 게이머가 함께하는 통합 허브.</p>
+      <div class="hero-actions">
+        <button class="btn-hero-primary" onclick="goLogin()">지금 무료로 시작하기</button>
+        <button class="btn-hero-secondary" onclick="showPage('ranking')">🎮 실시간 순위 보기</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item"><div class="stat-num">9,841</div><div class="stat-label">전국 피카 가맹점</div></div>
+        <div class="stat-item"><div class="stat-num"><span class="live-dot"></span>266</div><div class="stat-label">오늘의 종합게임지수</div></div>
+        <div class="stat-item"><div class="stat-num">30.61%</div><div class="stat-label">LoL 현재 점유율</div></div>
+        <div class="stat-item"><div class="stat-num">48,392</div><div class="stat-label">전체 회원 수</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEMBER TYPE -->
+  <section class="member-section">
+    <h2 class="section-title">어떤 분이신가요?</h2>
+    <p class="section-sub">회원 유형에 따라 맞춤 서비스를 제공합니다</p>
+    <div class="member-cards">
+      <div class="member-card" style="--card-border:rgba(255,140,0,.35);" onclick="goLogin()">
+        <span class="card-badge badge-pica">피카 가맹점</span>
+        <div class="card-icon">🏪</div>
+        <div class="card-title">PC방 점주 / 알바생</div>
+        <div class="card-desc">피카 관리 솔루션, 선불기기, 간편결제, 게임트릭스 기본 순위까지 한 계정으로.</div>
+        <div class="card-perks">
+          <div class="perk">피카라이브 / 피카AI 관리 연동</div>
+          <div class="perk">게임순위 TOP 20 무료 제공</div>
+          <div class="perk">점주 전용 커뮤니티 접근</div>
+          <div class="perk">선불기기·간편결제 관리</div>
+        </div>
+        <button class="card-btn primary">가맹점주 가입 →</button>
+      </div>
+      <div class="member-card" style="--card-border:rgba(59,130,246,.35);" onclick="goLogin()">
+        <span class="card-badge badge-pro">게임트릭스 PRO</span>
+        <div class="card-icon">📊</div>
+        <div class="card-title">게임사 / 마케터 / 분석가</div>
+        <div class="card-desc">PC방 게임 통계 전 구간 열람, 기간별 분석, CSV 다운로드 등 프로 기능.</div>
+        <div class="card-perks">
+          <div class="perk">전 순위 상세 데이터 열람</div>
+          <div class="perk">기간별·장르별 심층 분석</div>
+          <div class="perk">GT리포트 월별 다운로드</div>
+          <div class="perk">API 연동 (엔터프라이즈)</div>
+        </div>
+        <button class="card-btn">PRO 요금제 보기 →</button>
+      </div>
+      <div class="member-card" style="--card-border:rgba(34,197,94,.25);" onclick="goLogin()">
+        <span class="card-badge badge-free">일반 회원</span>
+        <div class="card-icon">🎮</div>
+        <div class="card-title">게이머 / 일반 사용자</div>
+        <div class="card-desc">PC방 게임 순위 열람, 커뮤니티 참여, 피카플레이 연동 계정.</div>
+        <div class="card-perks">
+          <div class="perk">게임순위 TOP 10 무료</div>
+          <div class="perk">커뮤니티 읽기·쓰기</div>
+          <div class="perk">피카플레이 계정 연동</div>
+          <div class="perk">게임 신규 등록 알림</div>
+        </div>
+        <button class="card-btn">무료 가입 →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD GRID -->
+  <div class="main-grid">
+    <div class="left-panel">
+      <!-- NOTICE -->
+      <div class="widget">
+        <div class="widget-header"><span class="widget-title">통합 공지사항</span><a class="widget-link">전체보기 →</a></div>
+        <div class="notice-list">
+          <div class="notice-item"><span class="notice-tag tag-pica">피카AI</span><span class="notice-text"><strong>피카AI 업데이트</strong> 카운터 UI 개선 및 AI 추천 기능 추가</span><span class="notice-date">04.06</span></div>
+          <div class="notice-item"><span class="notice-tag tag-gt">게임트릭스</span><span class="notice-text"><strong>2026년 4월 1주차</strong> 주간게임입점황 발행 (2026.03.30~04.05)</span><span class="notice-date">04.07</span></div>
+          <div class="notice-item"><span class="notice-tag tag-pica">피카AI</span><span class="notice-text">PC방 로그인 화면 개편 및 소셜 로그인 서비스 안내</span><span class="notice-date">04.06</span></div>
+          <div class="notice-item"><span class="notice-tag tag-sys">시스템</span><span class="notice-text">라이브/AI PC방 이용약관 및 PC방닷컴 이용약관 개정 안내</span><span class="notice-date">03.30</span></div>
+          <div class="notice-item"><span class="notice-tag tag-comm">커뮤니티</span><span class="notice-text">점주 커뮤니티 베타 오픈 — 사장님쉼터·구인구직·중고장터 통합</span><span class="notice-date">04.01</span></div>
+        </div>
+      </div>
+      <!-- COMMUNITY PREVIEW -->
+      <div class="widget">
+        <div class="widget-header"><span class="widget-title">커뮤니티 최신글</span><a class="widget-link" onclick="showPage('community')">더보기 →</a></div>
+        <div class="comm-list">
+          <div class="comm-item" onclick="showPage('community')"><div class="comm-title">최근 LoL 트래픽 갑자기 줄었나요? <span class="post-hot">🔥 HOT</span></div><div class="comm-meta"><span>🏪 점주</span><span>💬 47</span><span>👁 892</span><span>04.07</span></div></div>
+          <div class="comm-item" onclick="showPage('community')"><div class="comm-title">PICABOX+ 선불기기 연동 후기 — 생각보다 편하네요</div><div class="comm-meta"><span>🛠 운영</span><span>💬 23</span><span>👁 445</span><span>04.06</span></div></div>
+          <div class="comm-item" onclick="showPage('community')"><div class="comm-title">[구인] 서울 강남구 PC방 야간 알바 구합니다</div><div class="comm-meta"><span>👤 구인구직</span><span>💬 5</span><span>👁 210</span><span>04.05</span></div></div>
+          <div class="comm-item" onclick="showPage('community')"><div class="comm-title">중고 게이밍체어 30개 일괄 처분 — 직수령 가능</div><div class="comm-meta"><span>🛒 중고장터</span><span>💬 12</span><span>👁 334</span><span>04.04</span></div></div>
+        </div>
+      </div>
+    </div>
+    <!-- RIGHT -->
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="widget">
+        <div class="widget-header"><span class="widget-title"><span class="live-dot"></span>종합게임지수</span><span class="widget-meta">2026.04.09</span></div>
+        <div class="index-display">
+          <div class="index-num">266</div>
+          <div class="index-info"><div class="index-change down">▼ -12 (-4.32%)</div><div class="index-date">전일 278 → 오늘 266</div></div>
+        </div>
+        <div class="mini-chart">
+          <svg class="chart-svg" viewBox="0 0 260 60" style="height:60px;">
+            <defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ff8c00" stop-opacity=".3"/><stop offset="100%" stop-color="#ff8c00" stop-opacity="0"/></linearGradient></defs>
+            <path d="M0,45 L40,38 L80,20 L120,25 L160,15 L200,28 L260,48" fill="none" stroke="#ff8c00" stroke-width="2" opacity=".8"/>
+            <path d="M0,45 L40,38 L80,20 L120,25 L160,15 L200,28 L260,48 L260,60 L0,60Z" fill="url(#cg)"/>
+          </svg>
+        </div>
+      </div>
+      <!-- RANKING PREVIEW -->
+      <div class="widget">
+        <div class="widget-header"><span class="widget-title">🏆 PC방 게임순위</span><a class="widget-link" onclick="showPage('ranking')">전체보기 →</a></div>
+        <div class="rank-list">
+          <div class="rank-item"><span class="rank-num r1">1</span><div class="rank-icon">⚔️</div><div class="rank-info"><div class="rank-name">리그 오브 레전드</div><div class="rank-company">라이엇 게임즈</div></div><span class="rank-pct">30.61%</span><span class="rank-delta delta-same">—</span></div>
+          <div class="rank-item"><span class="rank-num r2">2</span><div class="rank-icon">🔫</div><div class="rank-info"><div class="rank-name">배틀그라운드</div><div class="rank-company">크래프톤</div></div><span class="rank-pct">8.18%</span><span class="rank-delta delta-same">—</span></div>
+          <div class="rank-item"><span class="rank-num r3">3</span><div class="rank-icon">🎯</div><div class="rank-info"><div class="rank-name">발로란트</div><div class="rank-company">라이엇 게임즈</div></div><span class="rank-pct">6.08%</span><span class="rank-delta delta-down">▼1</span></div>
+          <div class="rank-item"><span class="rank-num">4</span><div class="rank-icon">💣</div><div class="rank-info"><div class="rank-name">서든어택</div><div class="rank-company">넥슨</div></div><span class="rank-pct">4.77%</span><span class="rank-delta delta-up">▲1</span></div>
+          <div class="rank-item"><span class="rank-num">5</span><div class="rank-icon">⚽</div><div class="rank-info"><div class="rank-name">FC온라인</div><div class="rank-company">넥슨</div></div><span class="rank-pct">4.52%</span><span class="rank-delta delta-same">—</span></div>
+        </div>
+        <div style="padding:10px 20px 14px;"><div style="font-size:11px;color:var(--text3);text-align:center;">🔒 피카 가맹점주: TOP 20 무료 | PRO: 전 순위</div></div>
+      </div>
+      <div class="ad-banner" onclick="showPage('tools')">
+        <div class="ad-label">ADVERTISEMENT</div>
+        <div class="ad-title">PICABOX+</div>
+        <div class="ad-sub">선불기기의 기준을 새로 쓰다</div>
+        <div class="ad-cta">자세히 보기 →</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ⤴ 대시보드 페이지는 dashboard.html 로 분리되었습니다 -->
+<div class="page" id="page-dashboard" style="display:none;">
+  <div class="dash-main" style="padding:80px 24px;text-align:center;">
+    <h2 style="font-size:24px;margin-bottom:14px;">대시보드는 별도 페이지로 이동했습니다</h2>
+    <p style="color:var(--text2);margin-bottom:24px;">로그인 후 회원 유형에 맞는 대시보드를 보여드립니다.</p>
+    <a href="dashboard.html" class="btn-cta" style="display:inline-block;text-decoration:none;line-height:1.4;padding:12px 24px;font-size:14px;">대시보드 열기 →</a>
+  </div>
+</div>
+<!-- ══════════════ RANKING PAGE ══════════════ -->
+<div class="page" id="page-ranking">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="page-title">🏆 PC방 게임순위</div>
+      <div class="page-subtitle"><span class="live-dot"></span>2026년 4월 9일 기준 실시간 데이터 — gametrics.com 제공</div>
+    </div>
+  </div>
+  <div class="top-nav">
+    <div class="top-nav-inner">
+      <span class="top-nav-btn active">주간순위</span>
+      <span class="top-nav-btn">월간순위</span>
+      <span class="top-nav-btn">장르별</span>
+      <span class="top-nav-btn">종합지수</span>
+      <span class="top-nav-btn">GT리포트 <span class="gnb-badge">PRO</span></span>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="filter-bar">
+      <span class="filter-label">기간</span>
+      <button class="filter-btn active">이번 주</button>
+      <button class="filter-btn">지난 주</button>
+      <button class="filter-btn">이번 달</button>
+      <span class="filter-label" style="margin-left:12px">장르</span>
+      <button class="filter-btn active">전체</button>
+      <button class="filter-btn">AOS</button>
+      <button class="filter-btn">FPS</button>
+      <button class="filter-btn">RPG</button>
+      <button class="filter-btn">스포츠</button>
+    </div>
+    <div class="ranking-table">
+      <div class="table-head"><span>순위</span><span>게임</span><span>점유율</span><span>점유 비중</span><span>등락</span><span>상세</span></div>
+      <div class="table-row"><span class="t-rank r1">1</span><div class="t-game"><div class="t-game-icon">⚔️</div><div><div class="t-game-name">리그 오브 레전드</div><div class="t-game-pub">라이엇 게임즈 · AOS</div></div></div><span class="t-pct" style="color:var(--rank1)">30.61%</span><div><div class="t-bar"><div class="t-bar-fill" style="width:100%"></div></div></div><div class="t-change-cell"><span class="rank-delta delta-same">— 401주</span><span class="t-week">연속 1위</span></div><a class="widget-link" href="https://www.gametrics.com" target="_blank">상세→</a></div>
+      <div class="table-row"><span class="t-rank r2">2</span><div class="t-game"><div class="t-game-icon">🔫</div><div><div class="t-game-name">배틀그라운드</div><div class="t-game-pub">크래프톤 · 배틀로얄</div></div></div><span class="t-pct">8.18%</span><div><div class="t-bar"><div class="t-bar-fill" style="width:26%"></div></div></div><div class="t-change-cell"><span class="rank-delta delta-same">— 유지</span><span class="t-week">지난주 2위</span></div><a class="widget-link" href="https://www.gametrics.com" target="_blank">상세→</a></div>
+      <div class="table-row"><span class="t-rank r3">3</span><div class="t-game"><div class="t-game-icon">🎯</div><div><div class="t-game-name">발로란트</div><div class="t-game-pub">라이엇 게임즈 · FPS</div></div></div><span class="t-pct">6.08%</span><div><div class="t-bar"><div class="t-bar-fill" style="width:19%"></div></div></div><div class="t-change-cell"><span class="rank-delta delta-down">▼ 1</span><span class="t-week">지난주 2위</span></div><a class="widget-link" href="https://www.gametrics.com" target="_blank">상세→</a></div>
+      <div class="table-row"><span class="t-rank">4</span><div class="t-game"><div class="t-game-icon">💣</div><div><div class="t-game-name">서든어택</div><div class="t-game-pub">넥슨 · FPS</div></div></div><span class="t-pct">4.77%</span><div><div class="t-bar"><div class="t-bar-fill" style="width:15%"></div></div></div><div class="t-change-cell"><span class="rank-delta delta-up">▲ 1</span><span class="t-week">지난주 5위</span></div><a class="widget-link" href="https://www.gametrics.com" target="_blank">상세→</a></div>
+      <div class="table-row"><span class="t-rank">5</span><div class="t-game"><div class="t-game-icon">⚽</div><div><div class="t-game-name">FC온라인</div><div class="t-game-pub">넥슨 · 스포츠</div></div></div><span class="t-pct">4.52%</span><div><div class="t-bar"><div class="t-bar-fill" style="width:14%"></div></div></div><div class="t-change-cell"><span class="rank-delta delta-same">— 유지</span><span class="t-week">지난주 5위</span></div><a class="widget-link" href="https://www.gametrics.com" target="_blank">상세→</a></div>
+      <div class="table-row"><span class="t-rank">6</span><div class="t-game"><div class="t-game-icon">🦸</div><div><div class="t-game-name">오버워치2</div><div class="t-game-pub">블리자드 · FPS</div></div></div><span class="t-pct">4.69%</span><div><div class="t-bar"><div class="t-bar-fill" style="width:15%"></div></div></div><div class="t-change-cell"><span class="rank-delta delta-up">▲ 2</span><span class="t-week">지난주 8위</span></div><a class="widget-link" href="https://www.gametrics.com" target="_blank">상세→</a></div>
+      <div class="table-row"><span class="t-rank">7</span><div class="t-game"><div class="t-game-icon">🏰</div><div><div class="t-game-name">아이온2</div><div class="t-game-pub">엔씨소프트 · MMORPG</div></div></div><span class="t-pct">2.73%</span><div><div class="t-bar"><div class="t-bar-fill" style="width:8%"></div></div></div><div class="t-change-cell"><span class="rank-delta delta-down">▼ 1</span><span class="t-week">지난주 6위</span></div><a class="widget-link" href="https://www.gametrics.com" target="_blank">상세→</a></div>
+      <div class="table-row"><span class="t-rank">8</span><div class="t-game"><div class="t-game-icon">💎</div><div><div class="t-game-name">에이펙스 레전드</div><div class="t-game-pub">EA · 배틀로얄</div></div></div><span class="t-pct">2.19%</span><div><div class="t-bar"><div class="t-bar-fill" style="width:7%"></div></div></div><div class="t-change-cell"><span class="rank-delta delta-same">— 유지</span></div><a class="widget-link" href="https://www.gametrics.com" target="_blank">상세→</a></div>
+      <div class="table-row"><span class="t-rank">9</span><div class="t-game"><div class="t-game-icon">🚀</div><div><div class="t-game-name">로스트아크</div><div class="t-game-pub">스마일게이트 · MMORPG</div></div></div><span class="t-pct">2.07%</span><div><div class="t-bar"><div class="t-bar-fill" style="width:6%"></div></div></div><div class="t-change-cell"><span class="rank-delta delta-up">▲ 1</span></div><a class="widget-link" href="https://www.gametrics.com" target="_blank">상세→</a></div>
+      <div class="table-row"><span class="t-rank">10</span><div class="t-game"><div class="t-game-icon">🎲</div><div><div class="t-game-name">메이플스토리</div><div class="t-game-pub">넥슨 · MMORPG</div></div></div><span class="t-pct">2.19%</span><div><div class="t-bar"><div class="t-bar-fill" style="width:7%"></div></div></div><div class="t-change-cell"><span class="rank-delta delta-down">▼ 1</span></div><a class="widget-link" href="https://www.gametrics.com" target="_blank">상세→</a></div>
+      <div class="pro-lock-row">🔒 11위~전체는 <strong>피카 가맹점주</strong>(TOP 20) 또는 <a onclick="goLogin()">게임트릭스 PRO</a> 회원에게 공개됩니다.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ COMMUNITY ══════════════ -->
+<div class="page" id="page-community">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="page-title">💬 PC방 커뮤니티</div>
+      <div class="page-subtitle">점주·알바·게이머가 함께하는 자유로운 소통 공간</div>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="comm-layout">
+      <div class="comm-sidebar">
+        <div class="comm-sidebar-title">게시판</div>
+        <div class="comm-cat active">🔥 전체글<span class="comm-cat-count">1,204</span></div>
+        <div class="comm-cat">🏪 사장님쉼터<span class="comm-cat-count">487</span></div>
+        <div class="comm-cat">🛠 운영 TIP<span class="comm-cat-count">312</span></div>
+        <div class="comm-cat">👤 구인구직<span class="comm-cat-count">198</span></div>
+        <div class="comm-cat">🛒 중고장터<span class="comm-cat-count">156</span></div>
+        <div class="comm-cat">🎮 게이머 광장<span class="comm-cat-count">51</span></div>
+        <div class="comm-cat">💡 건의사항<span class="comm-cat-count">—</span></div>
+        <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);">
+          <div class="comm-sidebar-title">바로가기</div>
+          <div class="comm-cat">📞 고객지원</div>
+          <div class="comm-cat">⬇️ 다운로드</div>
+        </div>
+      </div>
+      <div>
+        <div class="comm-board">
+          <div class="comm-board-header"><span class="comm-board-title">전체글</span><button class="btn-write" onclick="goLogin()">✏️ 글쓰기</button></div>
+          <div class="post-item"><span class="post-category cat-ops">운영 TIP</span><span class="post-title">최근 LoL 트래픽 갑자기 줄었나요? <span class="post-hot">🔥 HOT</span></span><div class="post-stats"><span>💬 47</span><span>👁 892</span><span>04.07</span></div></div>
+          <div class="post-item"><span class="post-category cat-free">사장님쉼터</span><span class="post-title">PICABOX+ 선불기기 연동 후기 — 생각보다 편하네요</span><div class="post-stats"><span>💬 23</span><span>👁 445</span><span>04.06</span></div></div>
+          <div class="post-item"><span class="post-category cat-ops">운영 TIP</span><span class="post-title">카카오페이 간편결제 정산 일정 정리 (2026 최신)</span><div class="post-stats"><span>💬 15</span><span>👁 678</span><span>04.05</span></div></div>
+          <div class="post-item"><span class="post-category cat-hire">구인구직</span><span class="post-title">[구인] 서울 강남구 PC방 야간 알바 구합니다</span><div class="post-stats"><span>💬 5</span><span>👁 210</span><span>04.05</span></div></div>
+          <div class="post-item"><span class="post-category cat-free">사장님쉼터</span><span class="post-title">개점 3년차인데 손님 연령층 변화 느끼시는 분 있나요?</span><div class="post-stats"><span>💬 31</span><span>👁 567</span><span>04.04</span></div></div>
+          <div class="post-item"><span class="post-category cat-used">중고장터</span><span class="post-title">게이밍체어 30개 일괄 처분 — 직접 수령 가능 (경기)</span><div class="post-stats"><span>💬 12</span><span>👁 334</span><span>04.04</span></div></div>
+          <div class="post-item"><span class="post-category cat-ops">운영 TIP</span><span class="post-title">피카AI 카운터 좌석 AI 배치 써보신 분 후기 부탁드려요</span><div class="post-stats"><span>💬 18</span><span>👁 421</span><span>04.03</span></div></div>
+          <div class="post-item"><span class="post-category cat-free">사장님쉼터</span><span class="post-title">호요버스 PC방 혜택 4월 정리 (원신·젠레스)</span><div class="post-stats"><span>💬 9</span><span>👁 502</span><span>04.02</span></div></div>
+        </div>
+      </div>
+      <div class="comm-right">
+        <div class="popular-posts">
+          <div class="pop-title">🔥 주간 인기글</div>
+          <div class="pop-item"><span class="pop-num">1</span><span class="pop-text">최근 LoL 트래픽 갑자기 줄었나요?</span></div>
+          <div class="pop-item"><span class="pop-num">2</span><span class="pop-text">카카오페이 간편결제 정산 일정</span></div>
+          <div class="pop-item"><span class="pop-num">3</span><span class="pop-text">개점 3년차 손님 연령층 변화</span></div>
+          <div class="pop-item"><span class="pop-num">4</span><span class="pop-text">PICABOX+ 선불기기 연동 후기</span></div>
+          <div class="pop-item"><span class="pop-num">5</span><span class="pop-text">호요버스 PC방 혜택 4월 정리</span></div>
+        </div>
+        <div class="popular-posts">
+          <div class="pop-title">📢 빠른 메뉴</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
+            <button style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 8px;cursor:pointer;font-size:11px;color:var(--text2);font-family:inherit;">🖥 원격A/S</button>
+            <button style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 8px;cursor:pointer;font-size:11px;color:var(--text2);font-family:inherit;">📺 웹매장조회</button>
+            <button style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 8px;cursor:pointer;font-size:11px;color:var(--text2);font-family:inherit;">💳 간편결제</button>
+            <button style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 8px;cursor:pointer;font-size:11px;color:var(--text2);font-family:inherit;">📞 고객지원</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ TOOLS ══════════════ -->
+<div class="page" id="page-tools">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="page-title">🛠 피카 솔루션</div>
+      <div class="page-subtitle">PC방 운영을 위한 완전한 도구 세트 — 관리·결제·유틸 모두 하나로</div>
+    </div>
+  </div>
+  <div class="top-nav">
+    <div class="top-nav-inner">
+      <span class="top-nav-btn active">전체</span>
+      <span class="top-nav-btn">관리 프로그램</span>
+      <span class="top-nav-btn">선불기기</span>
+      <span class="top-nav-btn">간편결제</span>
+      <span class="top-nav-btn">유틸·보안</span>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="tools-grid">
+      <div class="tool-card" style="--tool-glow:rgba(255,140,0,.08);--tool-border:rgba(255,140,0,.35);">
+        <span class="tool-status status-new">NEW AI</span>
+        <div class="tool-icon">🤖</div>
+        <div class="tool-name">피카AI</div>
+        <div class="tool-desc">AI 기반 차세대 PC방 관리 시스템. 좌석 배치, 요금제, 손님 통계 자동 분석.</div>
+        <div class="tool-tags"><span class="tool-tag">AI 추천</span><span class="tool-tag">카운터</span><span class="tool-tag">통계</span></div>
+      </div>
+      <div class="tool-card" style="--tool-glow:rgba(255,140,0,.06);--tool-border:rgba(255,140,0,.3);">
+        <span class="tool-status status-live">LIVE</span>
+        <div class="tool-icon">🖥</div>
+        <div class="tool-name">피카라이브 4.0</div>
+        <div class="tool-desc">PC방 1등 관리 프로그램. 좌석 관리, 요금 청구, 손님 이용내역, 싱크·패치 일괄 적용.</div>
+        <div class="tool-tags"><span class="tool-tag">좌석관리</span><span class="tool-tag">요금청구</span><span class="tool-tag">싱크패치</span></div>
+      </div>
+      <div class="tool-card" style="--tool-glow:rgba(59,130,246,.06);--tool-border:rgba(59,130,246,.3);">
+        <span class="tool-status status-new">NEW</span>
+        <div class="tool-icon">📦</div>
+        <div class="tool-name">PICABOX+</div>
+        <div class="tool-desc">선불기기의 새 기준. 쿠폰·마일리지 적립, 모바일 결제, 피카플레이 연동.</div>
+        <div class="tool-tags"><span class="tool-tag">선불기기</span><span class="tool-tag">쿠폰</span><span class="tool-tag">마일리지</span></div>
+      </div>
+      <div class="tool-card" style="--tool-glow:rgba(34,197,94,.05);--tool-border:rgba(34,197,94,.25);">
+        <span class="tool-status status-live">LIVE</span>
+        <div class="tool-icon">💳</div>
+        <div class="tool-name">피카페이 간편결제</div>
+        <div class="tool-desc">결제 수수료 ZERO. 카카오페이·쿠폰·마일리지 통합 정산. PC방 모바일 결제 솔루션.</div>
+        <div class="tool-tags"><span class="tool-tag">수수료0</span><span class="tool-tag">카카오페이</span><span class="tool-tag">정산</span></div>
+      </div>
+      <div class="tool-card" style="--tool-glow:rgba(168,85,247,.05);--tool-border:rgba(168,85,247,.25);">
+        <span class="tool-status status-live">LIVE</span>
+        <div class="tool-icon">📱</div>
+        <div class="tool-name">피카 매장관리 PRO</div>
+        <div class="tool-desc">모바일에서 매장을 실시간 모니터링. 웹매장조회, 매출리포트, 원격 관제.</div>
+        <div class="tool-tags"><span class="tool-tag">모바일</span><span class="tool-tag">실시간</span><span class="tool-tag">매출리포트</span></div>
+      </div>
+      <div class="tool-card" style="--tool-glow:rgba(255,140,0,.05);--tool-border:rgba(255,140,0,.25);">
+        <span class="tool-status status-beta">BETA</span>
+        <div class="tool-icon">🎮</div>
+        <div class="tool-name">피카플레이</div>
+        <div class="tool-desc">PC방 손님 전용 B2C 플랫폼. 미션 이벤트, 쿠폰, 게임 혜택 통합 앱.</div>
+        <div class="tool-tags"><span class="tool-tag">B2C</span><span class="tool-tag">미션이벤트</span><span class="tool-tag">게임혜택</span></div>
+      </div>
+    </div>
+    <div class="widget">
+      <div class="widget-header"><span class="widget-title">빠른 작업</span><span class="widget-meta">로그인 후 이용 가능</span></div>
+      <div class="quick-grid">
+        <div class="quick-btn"><div class="quick-btn-icon">📺</div><div class="quick-btn-label">웹매장조회</div></div>
+        <div class="quick-btn"><div class="quick-btn-icon">🖥</div><div class="quick-btn-label">원격A/S</div></div>
+        <div class="quick-btn"><div class="quick-btn-icon">💳</div><div class="quick-btn-label">간편결제 정산</div></div>
+        <div class="quick-btn"><div class="quick-btn-icon">📥</div><div class="quick-btn-label">소프트웨어 다운</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer" id="main-footer">
+  <div class="footer-inner">
+    <div>
+      <div class="logo" style="margin-bottom:10px;">
+        <div class="logo-mark">P</div>
+        <span class="logo-text">PICA<span>HUB</span></span>
+      </div>
+      <p style="font-size:12px;color:var(--text3);line-height:1.7;">PC방닷컴 × 게임트릭스<br>통합 플랫폼 BETA</p>
+    </div>
+    <div class="footer-links">
+      <div>
+        <div class="footer-col-title">서비스</div>
+        <a class="footer-link" onclick="showPage('ranking')">게임순위</a>
+        <a class="footer-link" onclick="showPage('tools')">피카 솔루션</a>
+        <a class="footer-link" onclick="showPage('community')">커뮤니티</a>
+        <a class="footer-link">공지사항</a>
+      </div>
+      <div>
+        <div class="footer-col-title">솔루션</div>
+        <a class="footer-link">피카AI</a>
+        <a class="footer-link">피카라이브 4.0</a>
+        <a class="footer-link">PICABOX+</a>
+        <a class="footer-link">피카페이</a>
+      </div>
+      <div>
+        <div class="footer-col-title">지원</div>
+        <a class="footer-link">고객센터 2552</a>
+        <a class="footer-link">원격 A/S</a>
+        <a class="footer-link">다운로드</a>
+        <a class="footer-link">FAQ</a>
+      </div>
+      <div>
+        <div class="footer-col-title">회사</div>
+        <a class="footer-link">회사 소개</a>
+        <a class="footer-link">이용약관</a>
+        <a class="footer-link">개인정보처리방침</a>
+        <a class="footer-link">광고/제휴 문의</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 PICA HUB (PC방닷컴 × 게임트릭스). All rights reserved.</span>
+    <span>사업자등록번호 123-45-67890 · 서울특별시 강남구 테헤란로 123</span>
+  </div>
+</footer>
+
+<script src="assets/auth.js"></script>
+<script>
+// Page nav (in-page tabs)
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + id);
+  if (target) target.classList.add('active');
+  document.querySelectorAll('.gnb a').forEach(a => a.classList.remove('active'));
+  const map = { ranking:'nav-ranking', tools:'nav-tools', community:'nav-community' };
+  if (map[id]) document.getElementById(map[id])?.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// 외부 페이지로 이동
+function goLogin(){ window.location.href = 'login.html'; }
+function goDashboard(){ window.location.href = 'dashboard.html'; }
+function doLogout(){ PicaAuth.logout(); window.location.reload(); }
+
+// 세션 기반 헤더 렌더
+function renderAuthState(){
+  const s = PicaAuth.getSession();
+  const pub = document.getElementById('header-public');
+  const inh = document.getElementById('header-loggedin');
+  if (!s) {
+    pub.style.display = 'flex';
+    inh.style.display = 'none';
+    return;
+  }
+  pub.style.display = 'none';
+  inh.style.display = 'flex';
+  document.getElementById('avatar-char').textContent = s.avatar;
+  document.getElementById('user-display-name').textContent = s.name;
+  const roleEl = document.getElementById('user-display-role');
+  roleEl.textContent = s.roleLabel;
+  const colorMap = { owner:'var(--accent)', pro:'var(--blue)', gamer:'var(--purple)' };
+  roleEl.style.color = colorMap[s.role] || 'var(--accent)';
+}
+
+// Comm cats
+document.querySelectorAll('.comm-cat').forEach(cat => {
+  cat.addEventListener('click', function() {
+    this.closest('.comm-sidebar').querySelectorAll('.comm-cat').forEach(c => c.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// filter/top-nav buttons
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    this.closest('.filter-bar').querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+document.querySelectorAll('.top-nav-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    this.closest('.top-nav-inner').querySelectorAll('.top-nav-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+renderAuthState();
+</script>
+</body>
+</html>
